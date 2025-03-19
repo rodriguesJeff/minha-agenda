@@ -1,4 +1,4 @@
-import 'package:minha_agenda/src/models/logradouro_viacep.dart';
+import 'package:minha_agenda/src/models/endereco_model.dart';
 
 class ContatoModel {
   String id;
