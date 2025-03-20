@@ -7,7 +7,10 @@ class DoLogin {
 
   DoLogin({required this.repository});
 
-  Future<Either<String, UsuarioModel>> call({required String email, required String senha}) async {
+  Future<Either<String, UsuarioModel>> call({
+    required String email,
+    required String senha,
+  }) async {
     return repository.login(email: email, senha: senha);
   }
 }

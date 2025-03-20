@@ -8,8 +8,17 @@ class DoRegister {
 
   DoRegister({required this.repository});
 
-  Future<Either<String, bool>> call({required String nome, email, senha}) async {
-    final usuario = UsuarioModel(id: Uuid().v4(), nome: nome, email: email, senha: senha);
+  Future<Either<String, bool>> call({
+    required String nome,
+    email,
+    senha,
+  }) async {
+    final usuario = UsuarioModel(
+      id: Uuid().v4(),
+      nome: nome,
+      email: email,
+      senha: senha,
+    );
     return repository.cadastrarUsuario(usuario);
   }
 }

@@ -13,16 +13,20 @@ class AuthStore extends ChangeNotifier {
   TextEditingController emailController = TextEditingController();
   TextEditingController senhaController = TextEditingController();
   TextEditingController nomeController = TextEditingController();
-  late UsuarioModel usuarioLogado;
+  UsuarioModel? usuarioLogado;
 
   String erro = "";
   bool? usuarioCriadoComSucesso;
+  bool estaCriandoConta = false;
 
   void login() async {
     carregando = true;
     notifyListeners();
 
-    final result = await doLogin(email: emailController.text, senha: senhaController.text);
+    final result = await doLogin(
+      email: emailController.text,
+      senha: senhaController.text,
+    );
 
     result.fold(
       (l) {
@@ -30,6 +34,7 @@ class AuthStore extends ChangeNotifier {
       },
       (r) {
         usuarioLogado = r;
+        erro = '';
       },
     );
 
@@ -41,7 +46,11 @@ class AuthStore extends ChangeNotifier {
     carregando = true;
     notifyListeners();
 
-    final result = await doRegister(email: emailController.text, senha: senhaController.text, nome: nomeController.text);
+    final result = await doRegister(
+      email: emailController.text,
+      senha: senhaController.text,
+      nome: nomeController.text,
+    );
 
     result.fold(
       (l) {
@@ -49,10 +58,17 @@ class AuthStore extends ChangeNotifier {
       },
       (r) {
         usuarioCriadoComSucesso = r;
+        erro = '';
       },
     );
 
     carregando = false;
+    notifyListeners();
+  }
+
+  void setEstaCriandoConta() {
+    estaCriandoConta = !estaCriandoConta;
+    erro = '';
     notifyListeners();
   }
 }
