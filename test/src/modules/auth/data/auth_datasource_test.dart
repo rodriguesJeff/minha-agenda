@@ -1,102 +1,89 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:minha_agenda/src/modules/auth/data/auth_datasource.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
-import 'package:minha_agenda/src/utils/db_operations.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sembast/sembast_memory.dart';
 
 class MockDatabase extends Mock implements Database {}
 
-class MockDBOperations extends Mock implements DataBaseOperations {}
+class MockStoreRef extends Mock
+    implements StoreRef<String, Map<String, dynamic>> {}
+
+class FakeRecordSnapshot extends Fake
+    implements RecordSnapshot<String, Map<String, dynamic>> {
+  @override
+  final String key;
+
+  @override
+  final Map<String, dynamic> value;
+
+  FakeRecordSnapshot(this.key, this.value);
+}
+
+class FakeDatabaseClient extends Fake implements DatabaseClient {}
 
 void main() {
-  late MockDatabase mockDatabase;
-  late MockDBOperations dbOperations;
+  late Database db;
   late AuthDatasource datasource;
 
-  setUpAll(() {
-    mockDatabase = MockDatabase();
-    dbOperations = MockDBOperations();
-    datasource = AuthDatasourceImpl(dbOperations);
-
-    when(() => dbOperations.initOperations()).thenAnswer((_) async {});
-
-    when(() => dbOperations.database).thenReturn(mockDatabase);
-
-    datasource = AuthDatasourceImpl(dbOperations);
+  setUp(() async {
+    db = await databaseFactoryMemory.openDatabase('test.db');
+    datasource = AuthDatasource(db);
   });
 
-  group("cadastrarUsuario", () {
-    test("Deve retornar false quando acontecer algum conflito na criação do usuário", () async {
-      when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(0));
+  tearDown(() async {
+    await db.close();
+  });
 
-      final result = await datasource.cadastrarUsuario({});
+  group('AuthDatasource com Sembast Memory', () {
+    test('Deve cadastrar um usuário com sucesso', () async {
+      final payload = {'email': 'email@teste.com', 'senha': '123456'};
 
-      expect(result, isFalse);
-    });
-
-    test("Deve retornar DBFailure quando o Sqflite emitir alguma Exceção", () async {
-      when(() => mockDatabase.insert(any(), any())).thenThrow(Exception('Erro simulado'));
-
-      expect(() async => await datasource.cadastrarUsuario({}), throwsA(isA<DBFailure>()));
-    });
-
-    test("Deve retornar DBFailure quando o email já estiver sendo usado", () async {
-      when(() => mockDatabase.query(any())).thenAnswer(
-        (_) async => [
-          {'email': 'email'},
-        ],
-      );
-
-      expect(() async => await datasource.cadastrarUsuario({}), throwsA(isA<DBFailure>()));
-    });
-
-    test("Deve retornar true quando o registro do usuario for feito com sucesso", () async {
-      when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(1));
-
-      final result = await datasource.cadastrarUsuario({});
+      final result = await datasource.cadastrarUsuario(payload);
 
       expect(result, isTrue);
     });
-  });
 
-  group("login", () {
-    test("Deve estourar DBFailure quando o Sqflite emitir uma exceção", () async {
-      when(() => mockDatabase.query(any())).thenThrow(Exception('Erro simulado'));
+    test('Deve lançar DBFailure se o email já estiver sendo usado', () async {
+      final payload = {'email': 'email@teste.com', 'senha': '123456'};
 
-      expect(() async => await datasource.login(email: 'email@teste.com', senha: '123456'), throwsA(isA<DBFailure>()));
+      await datasource.cadastrarUsuario(payload);
+
+      expect(
+        () => datasource.cadastrarUsuario(payload),
+        throwsA(isA<DBFailure>()),
+      );
     });
 
-    test("Deve estourar DBFailure quando o email nao existir", () async {
-      when(() => mockDatabase.query(any())).thenAnswer(
-        (_) async => Future.value([
-          {"email": "testando@gmail.com"},
-        ]),
+    test('Deve realizar login com sucesso', () async {
+      final payload = {'email': 'email@teste.com', 'senha': '123456'};
+
+      await datasource.cadastrarUsuario(payload);
+
+      final result = await datasource.login(
+        email: payload['email']!,
+        senha: payload['senha']!,
       );
 
-      expect(() async => await datasource.login(email: 'email@teste.com', senha: '123456'), throwsA(isA<DBFailure>()));
+      expect(result['email'], payload['email']);
     });
 
-    test("Deve estourar DBFailure quando o email existir mas a senha não estiver correta", () async {
-      when(() => mockDatabase.query(any())).thenAnswer(
-        (_) async => Future.value([
-          {"email": "testando@gmail.com", "senha": "1234"},
-        ]),
-      );
+    test('Deve lançar DBFailure se a senha estiver incorreta', () async {
+      final payload = {'email': 'email@teste.com', 'senha': '123456'};
 
-      expect(() async => await datasource.login(email: 'email@teste.com', senha: '123456'), throwsA(isA<DBFailure>()));
+      await datasource.cadastrarUsuario(payload);
+
+      expect(
+        () => datasource.login(email: payload['email']!, senha: 'senha_errada'),
+        throwsA(isA<DBFailure>()),
+      );
     });
 
-    test("Deve permitir o usuário logar quando os dados estiverem corretos", () async {
-      when(() => mockDatabase.query(any(), where: any(named: 'where'), whereArgs: any(named: 'whereArgs'))).thenAnswer(
-        (_) async => Future.value([
-          {"email": "email@teste.com", "senha": "123456"},
-        ]),
+    test('Deve lançar DBFailure se o usuário não existir', () async {
+      expect(
+        () => datasource.login(email: 'naoexiste@teste.com', senha: '123456'),
+        throwsA(isA<DBFailure>()),
       );
-
-      final response = await datasource.login(email: 'email@teste.com', senha: '123456');
-
-      expect(response, isA<Map<String, dynamic>>());
     });
   });
 }

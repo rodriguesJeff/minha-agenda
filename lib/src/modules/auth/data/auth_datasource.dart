@@ -1,56 +1,54 @@
 import 'package:minha_agenda/src/utils/app_failures.dart';
 import 'package:minha_agenda/src/utils/app_strings.dart';
-import 'package:minha_agenda/src/utils/db_operations.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sembast/sembast.dart';
+import 'package:sembast_web/sembast_web.dart';
 
-abstract class AuthDatasource {
-  Future<bool> cadastrarUsuario(Map<String, dynamic> payload);
-  Future<Map<String, dynamic>> login({required String email, required String senha});
-}
+class AuthDatasource {
+  final Database _db;
+  final StoreRef<String, Map<String, dynamic>> _cadastroInstancia =
+      stringMapStoreFactory.store(AppStrings.Usuario);
 
-class AuthDatasourceImpl implements AuthDatasource {
-  final DataBaseOperations database;
+  AuthDatasource(this._db);
 
-  AuthDatasourceImpl(this.database);
-
-  Future<Database> get _db async {
-    await database.initOperations();
-    return database.database;
-  }
-
-  @override
   Future<bool> cadastrarUsuario(Map<String, dynamic> payload) async {
     try {
-      final db = await _db;
+      final finder = Finder(filter: Filter.equals('email', payload['email']));
 
-      final consultaExistencia = await db.query(AppStrings.Usuario, where: 'email = ?', whereArgs: [payload['email']]);
+      final existingUsers = await _cadastroInstancia.find(_db, finder: finder);
 
-      if (consultaExistencia.isNotEmpty) {
+      if (existingUsers.isNotEmpty) {
         throw DBFailure(message: "Já existe um usuário com esse email!");
       }
 
-      final response = await db.insert(AppStrings.Usuario, payload);
+      await _cadastroInstancia.add(_db, payload);
 
-      return response == 1;
+      return true;
     } catch (e) {
       throw DBFailure(message: e.toString());
     }
   }
 
-  @override
-  Future<Map<String, dynamic>> login({required String email, required String senha}) async {
+  Future<Map<String, dynamic>> login({
+    required String email,
+    required String senha,
+  }) async {
     try {
-      final db = await _db;
+      final finder = Finder(filter: Filter.equals('email', email));
+      final usuarioEncontrado = await _cadastroInstancia.find(
+        _db,
+        finder: finder,
+      );
 
-      final usuarioEncontrado = await db.query(AppStrings.Usuario, where: 'email = ?', whereArgs: [email]);
-
-      if (usuarioEncontrado.isNotEmpty && usuarioEncontrado.first["senha"] == senha) {
-        return usuarioEncontrado.first;
+      if (usuarioEncontrado.isNotEmpty &&
+          usuarioEncontrado.first.value['senha'] == senha) {
+        return usuarioEncontrado.first.value;
       } else {
         throw DBFailure(message: "Usuário não existente");
       }
     } catch (e) {
-      throw DBFailure(message: e.toString());
+      throw DBFailure(
+        message: "Erro: Verifique suas credenciais e tente novamente!",
+      );
     }
   }
 }

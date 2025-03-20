@@ -25,54 +25,97 @@ void main() {
   });
 
   group("cadastrarUsuario", () {
-    test("Deve retornar Left(String) quando ocorrer algum erro no registro de usuario", () async {
-      when(() => datasource.cadastrarUsuario(any())).thenThrow(DBFailure(message: 'Erro ao registrar usuario'));
+    test(
+      "Deve retornar Left(String) quando ocorrer algum erro no registro de usuario",
+      () async {
+        when(
+          () => datasource.cadastrarUsuario(any()),
+        ).thenThrow(DBFailure(message: 'Erro ao registrar usuario'));
 
-      final result = await repository.cadastrarUsuario(FakeUsuarioModel());
+        final result = await repository.cadastrarUsuario(FakeUsuarioModel());
 
-      expect(result, equals(Left('Erro ao registrar usuario')));
-    });
+        expect(result, equals(Left('Erro ao registrar usuario')));
+      },
+    );
 
-    test("Deve retornar Left(String) quando ocorrer o datasource retornar false", () async {
-      when(() => datasource.cadastrarUsuario(any())).thenAnswer((_) => Future.value(false));
+    test(
+      "Deve retornar Left(String) quando ocorrer o datasource retornar false",
+      () async {
+        when(
+          () => datasource.cadastrarUsuario(any()),
+        ).thenAnswer((_) => Future.value(false));
 
-      final result = await repository.cadastrarUsuario(FakeUsuarioModel());
+        final result = await repository.cadastrarUsuario(FakeUsuarioModel());
 
-      expect(result, equals(Left('Falha no processo do registro')));
-    });
+        expect(result, equals(Left('Falha no processo do registro')));
+      },
+    );
 
-    test("Deve retornar Left(String) quando o email ja estiver sendo usado", () async {
-      when(() => datasource.cadastrarUsuario(any())).thenThrow(DBFailure(message: 'Email já usado'));
+    test(
+      "Deve retornar Left(String) quando o email ja estiver sendo usado",
+      () async {
+        when(
+          () => datasource.cadastrarUsuario(any()),
+        ).thenThrow(DBFailure(message: 'Email já usado'));
 
-      final result = await repository.cadastrarUsuario(FakeUsuarioModel());
+        final result = await repository.cadastrarUsuario(FakeUsuarioModel());
 
-      expect(result, equals(Left('Email já usado')));
-    });
+        expect(result, equals(Left('Email já usado')));
+      },
+    );
 
-    test("Deve retornar Right(bool) quando o cadastro for realizado com suesso", () async {
-      when(() => datasource.cadastrarUsuario(any())).thenAnswer((_) => Future.value(true));
+    test(
+      "Deve retornar Right(bool) quando o cadastro for realizado com suesso",
+      () async {
+        when(
+          () => datasource.cadastrarUsuario(any()),
+        ).thenAnswer((_) => Future.value(true));
 
-      final result = await repository.cadastrarUsuario(FakeUsuarioModel());
+        final result = await repository.cadastrarUsuario(FakeUsuarioModel());
 
-      expect(result, equals(Right(true)));
-    });
+        expect(result, equals(Right(true)));
+      },
+    );
   });
 
   group("login", () {
-    test("Deve retornar Left(String) quando ocorrer algum erro no login", () async {
-      when(() => datasource.login(email: any(named: 'email'), senha: any(named: 'senha'))).thenThrow(DBFailure(message: 'Erro na busca do email'));
+    test(
+      "Deve retornar Left(String) quando ocorrer algum erro no login",
+      () async {
+        when(
+          () => datasource.login(
+            email: any(named: 'email'),
+            senha: any(named: 'senha'),
+          ),
+        ).thenThrow(DBFailure(message: 'Erro na busca do email'));
 
-      final result = await repository.login(email: 'teste', senha: 'senha');
+        final result = await repository.login(email: 'teste', senha: 'senha');
 
-      expect(result, equals(Left('Erro na busca do email')));
-    });
+        expect(result, equals(Left('Erro na busca do email')));
+      },
+    );
 
-    test("Deve retornar Right(UsuarioMOdel) quando o login for efetuado com sucesso", () async {
-      when(() => datasource.login(email: any(named: 'email'), senha: any(named: 'senha'))).thenAnswer((_) async => {"id": 'id', "nome": 'nome', "email": 'email', "senha": 'senha'});
+    test(
+      "Deve retornar Right(UsuarioMOdel) quando o login for efetuado com sucesso",
+      () async {
+        when(
+          () => datasource.login(
+            email: any(named: 'email'),
+            senha: any(named: 'senha'),
+          ),
+        ).thenAnswer(
+          (_) async => {
+            "id": 'id',
+            "nome": 'nome',
+            "email": 'email',
+            "senha": 'senha',
+          },
+        );
 
-      final result = await repository.login(email: 'teste', senha: 'senha');
+        final result = await repository.login(email: 'teste', senha: 'senha');
 
-      expect(result, isA<Right>());
-    });
+        expect(result, isA<Right>());
+      },
+    );
   });
 }

@@ -4,10 +4,20 @@ class UsuarioModel {
   String email;
   String senha;
 
-  UsuarioModel({required this.id, required this.nome, required this.email, required this.senha});
+  UsuarioModel({
+    required this.id,
+    required this.nome,
+    required this.email,
+    required this.senha,
+  });
 
   factory UsuarioModel.fromJson(Map<String, dynamic> json) {
-    return UsuarioModel(id: json["id"], nome: json["nome"], email: json["email"], senha: json["senha"]);
+    return UsuarioModel(
+      id: json["id"],
+      nome: json["nome"],
+      email: json["email"],
+      senha: json["senha"],
+    );
   }
 
   Map<String, dynamic> toJson() {

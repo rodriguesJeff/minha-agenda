@@ -22,7 +22,10 @@ class AuthRepository {
     }
   }
 
-  Future<Either<String, UsuarioModel>> login({required String email, required String senha}) async {
+  Future<Either<String, UsuarioModel>> login({
+    required String email,
+    required String senha,
+  }) async {
     try {
       final response = await datasource.login(email: email, senha: senha);
 
