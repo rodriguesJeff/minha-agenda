@@ -8,7 +8,7 @@ class AuthRepository {
 
   AuthRepository({required this.datasource});
 
-  Future<Either<String, bool>?> cadastrarUsuario(UsuarioModel usuario) async {
+  Future<Either<String, bool>> cadastrarUsuario(UsuarioModel usuario) async {
     try {
       final response = await datasource.cadastrarUsuario(usuario.toJson());
 
