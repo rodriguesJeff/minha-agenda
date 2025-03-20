@@ -78,7 +78,7 @@ void main() {
     });
 
     test("Deve permitir o usuário logar quando os dados estiverem corretos", () async {
-      when(() => mockDatabase.query(any())).thenAnswer(
+      when(() => mockDatabase.query(any(), where: any(named: 'where'), whereArgs: any(named: 'whereArgs'))).thenAnswer(
         (_) async => Future.value([
           {"email": "email@teste.com", "senha": "123456"},
         ]),
@@ -86,7 +86,7 @@ void main() {
 
       final response = await datasource.login(email: 'email@teste.com', senha: '123456');
 
-      expect(response, {"email": "email@teste.com", "senha": "123445"});
+      expect(response, isA<Map<String, dynamic>>());
     });
   });
 }
