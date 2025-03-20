@@ -41,6 +41,14 @@ void main() {
       expect(result, equals(Left('Falha no processo do registro')));
     });
 
+    test("Deve retornar Left(String) quando o email ja estiver sendo usado", () async {
+      when(() => datasource.cadastrarUsuario(any())).thenThrow(DBFailure(message: 'Email já usado'));
+
+      final result = await repository.cadastrarUsuario(FakeUsuarioModel());
+
+      expect(result, equals(Left('Email já usado')));
+    });
+
     test("Deve retornar Right(bool) quando o cadastro for realizado com suesso", () async {
       when(() => datasource.cadastrarUsuario(any())).thenAnswer((_) => Future.value(true));
 

@@ -41,6 +41,16 @@ void main() {
       expect(() async => await datasource.cadastrarUsuario({}), throwsA(isA<DBFailure>()));
     });
 
+    test("Deve retornar DBFailure quando o email já estiver sendo usado", () async {
+      when(() => mockDatabase.query(any())).thenAnswer(
+        (_) async => [
+          {'email': 'email'},
+        ],
+      );
+
+      expect(() async => await datasource.cadastrarUsuario({}), throwsA(isA<DBFailure>()));
+    });
+
     test("Deve retornar true quando o registro do usuario for feito com sucesso", () async {
       when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(1));
 

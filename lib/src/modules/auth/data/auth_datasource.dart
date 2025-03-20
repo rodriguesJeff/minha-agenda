@@ -23,6 +23,12 @@ class AuthDatasourceImpl implements AuthDatasource {
     try {
       final db = await _db;
 
+      final consultaExistencia = await db.query(AppStrings.Usuario, where: 'email = ?', whereArgs: [payload['email']]);
+
+      if (consultaExistencia.isNotEmpty) {
+        throw DBFailure(message: "Já existe um usuário com esse email!");
+      }
+
       final response = await db.insert(AppStrings.Usuario, payload);
 
       return response == 1;
