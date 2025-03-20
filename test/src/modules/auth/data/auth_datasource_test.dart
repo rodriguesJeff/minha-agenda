@@ -14,7 +14,7 @@ void main() {
   late MockDBOperations dbOperations;
   late AuthDatasource datasource;
 
-  setUp(() {
+  setUpAll(() {
     mockDatabase = MockDatabase();
     dbOperations = MockDBOperations();
     datasource = AuthDatasourceImpl(dbOperations);
@@ -26,25 +26,67 @@ void main() {
     datasource = AuthDatasourceImpl(dbOperations);
   });
 
-  test("Deve retornar false quando acontecer algum conflito na criação do usuário", () async {
-    when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(0));
+  group("cadastrarUsuario", () {
+    test("Deve retornar false quando acontecer algum conflito na criação do usuário", () async {
+      when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(0));
 
-    final result = await datasource.cadastrarUsuario({});
+      final result = await datasource.cadastrarUsuario({});
 
-    expect(result, isFalse);
+      expect(result, isFalse);
+    });
+
+    test("Deve retornar DBFailure quando o Sqflite emitir alguma Exceção", () async {
+      when(() => mockDatabase.insert(any(), any())).thenThrow(Exception('Erro simulado'));
+
+      expect(() async => await datasource.cadastrarUsuario({}), throwsA(isA<DBFailure>()));
+    });
+
+    test("Deve retornar true quando o registro do usuario for feito com sucesso", () async {
+      when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(1));
+
+      final result = await datasource.cadastrarUsuario({});
+
+      expect(result, isTrue);
+    });
   });
 
-  test("Deve retornar DBFailure quando o Sqflite emitir alguma Exceção", () async {
-    when(() => mockDatabase.insert(any(), any())).thenThrow(Exception('Erro simulado'));
+  group("login", () {
+    test("Deve estourar DBFailure quando o Sqflite emitir uma exceção", () async {
+      when(() => mockDatabase.query(any())).thenThrow(Exception('Erro simulado'));
 
-    expect(() async => await datasource.cadastrarUsuario({}), throwsA(isA<DBFailure>()));
-  });
+      expect(() async => await datasource.login(email: 'email@teste.com', senha: '123456'), throwsA(isA<DBFailure>()));
+    });
 
-  test("Deve retornar true quando o registro do usuario for feito com sucesso", () async {
-    when(() => mockDatabase.insert(any(), any())).thenAnswer((_) async => Future.value(1));
+    test("Deve estourar DBFailure quando o email nao existir", () async {
+      when(() => mockDatabase.query(any())).thenAnswer(
+        (_) async => Future.value([
+          {"email": "testando@gmail.com"},
+        ]),
+      );
 
-    final result = await datasource.cadastrarUsuario({});
+      expect(() async => await datasource.login(email: 'email@teste.com', senha: '123456'), throwsA(isA<DBFailure>()));
+    });
 
-    expect(result, isTrue);
+    test("Deve estourar DBFailure quando o email existir mas a senha não estiver correta", () async {
+      when(() => mockDatabase.query(any())).thenAnswer(
+        (_) async => Future.value([
+          {"email": "testando@gmail.com", "senha": "1234"},
+        ]),
+      );
+
+      expect(() async => await datasource.login(email: 'email@teste.com', senha: '123456'), throwsA(isA<DBFailure>()));
+    });
+
+    test("Deve permitir o usuário logar quando os dados estiverem corretos", () async {
+      when(() => mockDatabase.query(any())).thenAnswer(
+        (_) async => Future.value([
+          {"email": "email@teste.com", "senha": "123456"},
+        ]),
+      );
+
+      final response = await datasource.login(email: 'email@teste.com', senha: '123456');
+
+      expect(response, {"email": "email@teste.com", "senha": "123445"});
+    });
   });
 }
