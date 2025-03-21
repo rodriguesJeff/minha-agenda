@@ -16,13 +16,15 @@ class AuthDatasource {
 
       final existingUsers = await _cadastroInstancia.find(_db, finder: finder);
 
-      if (existingUsers.first.value["email"] == payload["email"]) {
+      if (existingUsers.isNotEmpty) {
         throw DBFailure(message: "Já existe um usuário com esse email!");
       }
 
       await _cadastroInstancia.add(_db, payload);
 
       return true;
+    } on DBFailure {
+      rethrow;
     } catch (e) {
       throw DBFailure(message: "Erro no registro de usuário!");
     }
