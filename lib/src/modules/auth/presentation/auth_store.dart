@@ -15,9 +15,13 @@ class AuthStore extends ChangeNotifier {
   TextEditingController nomeController = TextEditingController();
   UsuarioModel? usuarioLogado;
 
-  String erro = "";
-  bool? usuarioCriadoComSucesso;
-  bool estaCriandoConta = false;
+  String _erro = "";
+  bool _usuarioCriadoComSucesso = false;
+  bool _estaCriandoConta = false;
+
+  String get erro => _erro;
+  bool get usuarioCriadoComSucesso => _usuarioCriadoComSucesso;
+  bool get estaCriandoConta => _estaCriandoConta;
 
   void login() async {
     carregando = true;
@@ -30,11 +34,11 @@ class AuthStore extends ChangeNotifier {
 
     result.fold(
       (l) {
-        erro = l;
+        setErro(l);
       },
       (r) {
         usuarioLogado = r;
-        erro = '';
+        setErro("");
       },
     );
 
@@ -54,11 +58,11 @@ class AuthStore extends ChangeNotifier {
 
     result.fold(
       (l) {
-        erro = l;
+        setErro(l);
       },
       (r) {
-        usuarioCriadoComSucesso = r;
-        erro = '';
+        setUsuarioCadastradoComSucesso(true);
+        setErro("");
       },
     );
 
@@ -66,9 +70,18 @@ class AuthStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setErro(String e) {
+    _erro = e;
+  }
+
   void setEstaCriandoConta() {
-    estaCriandoConta = !estaCriandoConta;
-    erro = '';
+    _estaCriandoConta = !_estaCriandoConta;
+    setErro('');
+    notifyListeners();
+  }
+
+  void setUsuarioCadastradoComSucesso(bool value) {
+    _usuarioCriadoComSucesso = value;
     notifyListeners();
   }
 }
