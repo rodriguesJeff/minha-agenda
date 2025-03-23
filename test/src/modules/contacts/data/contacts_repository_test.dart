@@ -10,7 +10,12 @@ import 'package:sembast/src/type.dart';
 
 class MockContactsDatasource extends Mock implements ContactsDatasource {}
 
-class FakeContatoMOdel extends Fake implements ContatoModel {}
+class FakeContatoMOdel extends Fake implements ContatoModel {
+  @override
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
 
 class MockRecordRef<K, V> extends Mock implements RecordRef<K, V> {}
 
@@ -142,6 +147,55 @@ void main() {
 
         expect(result.isRight(), isTrue);
         expect(result, equals(Right(true)));
+      },
+    );
+  });
+
+  group("editarContato", () {
+    test(
+      "Deve retornar Left(String) quando ocorrer algum erro na edição do contato",
+      () async {
+        when(
+          () => contactsDatasource.editarContato({}),
+        ).thenThrow(DBFailure(message: 'Erro ao atualizar contato'));
+
+        final result = await repository.editarContato(FakeContatoMOdel());
+
+        expect(result, equals(Left('Erro ao atualizar contato')));
+      },
+    );
+
+    test(
+      "Deve retornar Right(ContatoModel) quando a edição for um sucesso",
+      () async {
+        when(() => contactsDatasource.editarContato({})).thenAnswer(
+          (_) async => FakeRecordSnapshot("1", {
+            "id": "1",
+            "nome": "Ana Silva",
+            "cpf": "123.456.789-00",
+            "telefone": "(11) 98765-4321",
+            "endereco": {
+              "cep": "01000-000",
+              "logradouro": "Rua das Flores",
+              "unidade": "001",
+              "bairro": "Jardim Primavera",
+              "localidade": "São Paulo",
+              "uf": "SP",
+              "numero": 123,
+              "complemento": "Apto 101",
+              "estado": "São Paulo",
+              "regiao": "Sudeste",
+              "ddd": "11",
+            },
+            "latitude": "-23.550520",
+            "longitude": "-46.633308",
+          }),
+        );
+
+        final result = await repository.editarContato(FakeContatoMOdel());
+
+        expect(result.isRight(), isTrue);
+        expect(result.getOrElse(() => FakeContatoMOdel()), isA<ContatoModel>());
       },
     );
   });

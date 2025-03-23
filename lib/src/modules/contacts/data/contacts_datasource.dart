@@ -77,7 +77,9 @@ class ContactsDatasource {
     }
   }
 
-  Future<bool> editarContato(Map<String, dynamic> payload) async {
+  Future<RecordSnapshot<String, Map<String, dynamic>>> editarContato(
+    Map<String, dynamic> payload,
+  ) async {
     try {
       final finder = Finder(filter: Filter.equals('userId', payload['userId']));
 
@@ -97,7 +99,13 @@ class ContactsDatasource {
           final atualizacao = await _contatoInstancia.update(_db, payload);
 
           if (atualizacao == 1) {
-            return true;
+            final finder = Finder(filter: Filter.equals('id', payload['id']));
+            final usuarioExiste = await _contatoInstancia.find(
+              _db,
+              finder: finder,
+            );
+
+            return usuarioExiste.first;
           } else {
             throw DBFailure(
               message: "Ocorreu um erro na atualização do contato!",

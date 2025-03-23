@@ -38,4 +38,16 @@ class ContactsRepository {
       return Left(e.message);
     }
   }
+
+  Future<Either<String, ContatoModel>> editarContato(
+    ContatoModel contato,
+  ) async {
+    try {
+      final result = await datasource.editarContato(contato.toJson());
+
+      return Right(ContatoModel.fromJson(result.value));
+    } on DBFailure catch (e) {
+      return Left(e.message);
+    }
+  }
 }
