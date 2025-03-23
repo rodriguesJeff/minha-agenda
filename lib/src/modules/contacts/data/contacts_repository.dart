@@ -11,7 +11,20 @@ class ContactsRepository {
   Future<Either<String, List<ContatoModel>>> buscarTodosOsContatos(
     String userId,
   ) async {
-    try {} on DBFailure catch (e) {
+    try {
+      List<ContatoModel> contatos = [];
+      final response = await datasource.buscarTodosOsContatos(userId);
+
+      if (response.isEmpty) {
+        return Right(contatos);
+      }
+
+      for (final i in response) {
+        contatos.add(ContatoModel.fromJson(i.value));
+      }
+
+      return Right(contatos);
+    } on DBFailure catch (e) {
       return Left(e.message);
     }
   }
