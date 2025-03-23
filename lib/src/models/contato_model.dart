@@ -1,6 +1,7 @@
 import 'package:minha_agenda/src/models/endereco_model.dart';
 
 class ContatoModel {
+  String userId;
   String id;
   String nome;
   String cpf;
@@ -10,6 +11,7 @@ class ContatoModel {
   String longitude;
 
   ContatoModel({
+    required this.userId,
     required this.id,
     required this.nome,
     required this.cpf,
@@ -21,6 +23,7 @@ class ContatoModel {
 
   factory ContatoModel.fromJson(Map<String, dynamic> json) {
     return ContatoModel(
+      userId: json["userId"],
       id: json["id"],
       nome: json["nome"],
       cpf: json["cpf"],
@@ -33,6 +36,7 @@ class ContatoModel {
 
   Map<String, dynamic> toJson() {
     return {
+      "userId": userId,
       "id": id,
       "nome": nome,
       "cpf": cpf,
