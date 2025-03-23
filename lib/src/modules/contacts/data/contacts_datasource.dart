@@ -135,7 +135,7 @@ class ContactsDatasource {
         if (deletado == 1) {
           return true;
         } else {
-          throw DBFailure(message: "Ocorreu um erro no delete do contato!");
+          throw DBFailure(message: "Ocorreu um erro ao apagar contato!");
         }
       } else {
         throw DBFailure(message: "Não existe usuário cadastrado com esse id!");
@@ -143,7 +143,7 @@ class ContactsDatasource {
     } on DBFailure {
       rethrow;
     } catch (e) {
-      throw DBFailure(message: "Erro ao deletar contato");
+      throw DBFailure(message: "Erro ao apagar contato");
     }
   }
 }

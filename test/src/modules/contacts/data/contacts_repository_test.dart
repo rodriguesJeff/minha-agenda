@@ -115,4 +115,34 @@ void main() {
       },
     );
   });
+
+  group("apagarContato", () {
+    test(
+      "Deve retornar Left(String) se ocorrer algum erro no datasource",
+      () async {
+        when(
+          () => contactsDatasource.apagarContato("userid", "id"),
+        ).thenThrow(DBFailure(message: "Erro ao apagar contato"));
+
+        final result = await repository.apagarContato("userid", "id");
+
+        expect(result.isLeft(), isTrue);
+        expect(result, equals(Left("Erro ao apagar contato")));
+      },
+    );
+
+    test(
+      "Deve retornar Right(true) quando conseguir apagar sem erros",
+      () async {
+        when(
+          () => contactsDatasource.apagarContato("userid", "id"),
+        ).thenAnswer((_) async => Future.value(true));
+
+        final result = await repository.apagarContato("userid", "id");
+
+        expect(result.isRight(), isTrue);
+        expect(result, equals(Right(true)));
+      },
+    );
+  });
 }

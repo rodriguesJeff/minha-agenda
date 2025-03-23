@@ -28,4 +28,14 @@ class ContactsRepository {
       return Left(e.message);
     }
   }
+
+  Future<Either<String, bool>> apagarContato(String userId, contactId) async {
+    try {
+      final result = await datasource.apagarContato(userId, contactId);
+
+      return Right(result);
+    } on DBFailure catch (e) {
+      return Left(e.message);
+    }
+  }
 }
