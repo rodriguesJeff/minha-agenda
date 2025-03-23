@@ -199,4 +199,36 @@ void main() {
       },
     );
   });
+
+  group("cadastrarNovoContato", () {
+    test(
+      "Deve retornar Left(String) quando ocorrer um erro no cadastro de contato",
+      () async {
+        when(
+          () => contactsDatasource.cadastrarNovoContato({}),
+        ).thenThrow(DBFailure(message: 'Erro ao cadastro contato'));
+
+        final result = await repository.cadastrarNovoContato(
+          FakeContatoMOdel(),
+        );
+
+        expect(result, Left('Erro ao cadastro contato'));
+      },
+    );
+
+    test(
+      "Deve retornar Right(bool) quando o cadastro ocorrer sem erros",
+      () async {
+        when(
+          () => contactsDatasource.cadastrarNovoContato({}),
+        ).thenAnswer((_) async => Future.value(true));
+
+        final result = await repository.cadastrarNovoContato(
+          FakeContatoMOdel(),
+        );
+
+        expect(result, Right(true));
+      },
+    );
+  });
 }

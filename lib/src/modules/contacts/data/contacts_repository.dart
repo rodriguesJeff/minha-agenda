@@ -50,4 +50,16 @@ class ContactsRepository {
       return Left(e.message);
     }
   }
+
+  Future<Either<String, bool>> cadastrarNovoContato(
+    ContatoModel contato,
+  ) async {
+    try {
+      final response = await datasource.cadastrarNovoContato(contato.toJson());
+
+      return Right(response);
+    } on DBFailure catch (e) {
+      return Left(e.message);
+    }
+  }
 }
