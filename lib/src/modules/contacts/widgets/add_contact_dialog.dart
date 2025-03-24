@@ -20,149 +20,185 @@ class _AddContactDialogState extends State<AddContactDialog> {
       builder: (context, store, child) {
         return SingleChildScrollView(
           child: AlertDialog(
-            title: Text("Adicionar contato"),
+            title:
+                store.sucessoNoCadastro == true
+                    ? null
+                    : Text("Adicionar contato"),
             content: Form(
               key: _formKey,
               child: Column(
-                children: [
-                  if (store.erro.isNotEmpty) ...[
-                    Container(
-                      padding: EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.red,
-                      ),
-                      child: Text(
-                        store.erro,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    SizedBox(height: 12),
-                  ],
+                children:
+                    store.sucessoNoCadastro == true
+                        ? [
+                          SizedBox(height: 12),
+                          Text(
+                            "Contato cadastrado com sucesso!",
+                            style: TextStyle(fontSize: 30),
+                          ),
+                          SizedBox(height: 12),
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 48,
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              store.resetarControllers();
 
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Nome"),
-                    controller: store.nomeController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Telefone"),
-                    controller: store.telefoneController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                      TelefoneInputFormatter(),
-                    ],
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "CPF"),
-                    controller: store.cpfController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                      CpfInputFormatter(),
-                    ],
-                    enabled: !store.buscandoCep,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Campo obrigatório";
-                      }
+                              Navigator.of(context).pop();
+                            },
+                            child: Text("Fechar"),
+                          ),
+                        ]
+                        : [
+                          if (store.erro.isNotEmpty) ...[
+                            Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                color: Colors.red,
+                              ),
+                              child: Text(
+                                store.erro,
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            SizedBox(height: 12),
+                          ],
 
-                      return CPFValidator.isValid(value)
-                          ? null
-                          : "CPF inválido";
-                    },
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "CEP"),
-                    controller: store.cepController,
-                    onChanged: (s) {
-                      if (s.length < 10 && store.jaBuscouCep) {
-                        store.resetarBuscaCep();
-                      }
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Nome"),
+                            controller: store.nomeController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Telefone"),
+                            controller: store.telefoneController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp('[0-9]'),
+                              ),
+                              TelefoneInputFormatter(),
+                            ],
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "CPF"),
+                            controller: store.cpfController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp('[0-9]'),
+                              ),
+                              CpfInputFormatter(),
+                            ],
+                            enabled: !store.buscandoCep,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Campo obrigatório";
+                              }
 
-                      if (s.length == 10 && !store.jaBuscouCep) {
-                        store.buscarEndereco(s);
-                      }
-                    },
-                    enabled: !store.buscandoCep,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp('[0-9]')),
-                      CepInputFormatter(),
-                    ],
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Logradouro"),
-                    controller: store.logradouroController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Número"),
-                    controller: store.numeroController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Bairro"),
-                    controller: store.bairroController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Cidade"),
-                    controller: store.localidadeController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: "Estado"),
-                    controller: store.estadoController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Latitude",
-                      errorText: store.localizationErro,
-                    ),
-                    controller: store.latitudeController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Longitude",
-                      errorText: store.localizationErro,
-                    ),
-                    controller: store.longitudeController,
-                    enabled: !store.buscandoCep,
-                  ),
-                  SizedBox(height: 12),
-                ],
+                              return CPFValidator.isValid(value)
+                                  ? null
+                                  : "CPF inválido";
+                            },
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "CEP"),
+                            controller: store.cepController,
+                            onChanged: (s) {
+                              if (s.length < 10 && store.jaBuscouCep) {
+                                store.resetarBuscaCep();
+                              }
+
+                              if (s.length == 10 && !store.jaBuscouCep) {
+                                store.buscarEndereco(s);
+                              }
+                            },
+                            enabled: !store.buscandoCep,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp('[0-9]'),
+                              ),
+                              CepInputFormatter(),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: "Logradouro",
+                            ),
+                            controller: store.logradouroController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Número"),
+                            controller: store.numeroController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Bairro"),
+                            controller: store.bairroController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Cidade"),
+                            controller: store.localidadeController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(labelText: "Estado"),
+                            controller: store.estadoController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: "Latitude",
+                              errorText: store.localizationErro,
+                            ),
+                            controller: store.latitudeController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                          TextFormField(
+                            decoration: InputDecoration(
+                              labelText: "Longitude",
+                              errorText: store.localizationErro,
+                            ),
+                            controller: store.longitudeController,
+                            enabled: !store.buscandoCep,
+                          ),
+                          SizedBox(height: 12),
+                        ],
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Cancelar"),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate() == true) {
-                    store.cadastrarContato().then(
-                      (_) => Navigator.of(context).pop(),
-                    );
-                  }
-                },
-                child: Text("Adicionar"),
-              ),
-            ],
+            actions:
+                store.sucessoNoCadastro == true
+                    ? null
+                    : [
+                      TextButton(
+                        onPressed: () {
+                          store.resetarControllers();
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Cancelar"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate() == true) {
+                            store.cadastrarContato();
+                          }
+                        },
+                        child: Text("Adicionar"),
+                      ),
+                    ],
           ),
         );
       },

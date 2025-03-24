@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
@@ -39,8 +40,9 @@ class ContactStore extends ChangeNotifier {
   bool _carregando = false;
   bool _buscandoCep = false;
   String _erro = "";
-  late ContatoModel? contatoSelecionado;
+  ContatoModel? contatoSelecionado;
   LatLng? currentLatLng;
+  MapController mapController = MapController();
 
   bool get carregando => _carregando;
   String get erro => _erro;
@@ -113,6 +115,7 @@ class ContactStore extends ChangeNotifier {
       (r) {
         setErro('');
         buscarTodosOsContatos();
+        setSucessNoCadastro(true);
       },
     );
 
@@ -183,9 +186,18 @@ class ContactStore extends ChangeNotifier {
 
   Future<void> setMapPosition() async {
     final result = await getLocationPermission();
-    final position = result.fold((l) => null, (r) => r as Position?);
+    if (contatoSelecionado == null) {
+      final position = result.fold((l) => null, (r) => r as Position?);
 
-    currentLatLng = LatLng(position!.latitude, position.longitude);
+      currentLatLng = LatLng(position!.latitude, position.longitude);
+    } else {
+      currentLatLng = LatLng(
+        contatoSelecionado!.latitude,
+        contatoSelecionado!.longitude,
+      );
+      mapController.move(currentLatLng!, 17.0);
+    }
+
     notifyListeners();
   }
 
@@ -251,6 +263,45 @@ class ContactStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void selecionarContato(ContatoModel c) {
+    contatoSelecionado = c;
+    nomeController.text = c.nome;
+    cpfController.text = c.cpf;
+    telefoneController.text = c.telefone;
+    cepController.text = c.endereco.cep;
+    logradouroController.text = c.endereco.logradouro;
+    unidadeController.text = c.endereco.unidade;
+    bairroController.text = c.endereco.bairro;
+    localidadeController.text = c.endereco.localidade;
+    ufController.text = c.endereco.uf;
+    latitudeController.text = c.latitude.toString();
+    longitudeController.text = c.longitude.toString();
+    estadoController.text = c.endereco.estado ?? '';
+
+    setMapPosition();
+
+    notifyListeners();
+  }
+
+  void resetarControllers() {
+    nomeController.clear();
+    cpfController.clear();
+    telefoneController.clear();
+    cepController.clear();
+    logradouroController.clear();
+    unidadeController.clear();
+    bairroController.clear();
+    localidadeController.clear();
+    ufController.clear();
+    latitudeController.clear();
+    longitudeController.clear();
+    estadoController.clear();
+    numeroController.clear();
+    complementoController.clear();
+    setSucessNoCadastro(null);
+    setErro('');
+  }
+
   final nomeController = TextEditingController();
   final cpfController = TextEditingController();
   final telefoneController = TextEditingController();
@@ -284,5 +335,11 @@ class ContactStore extends ChangeNotifier {
 
   void resetarBuscaCep() {
     jaBuscouCep = false;
+  }
+
+  bool? _sucessoNoCadastro;
+  bool? get sucessoNoCadastro => _sucessoNoCadastro;
+  void setSucessNoCadastro(bool? s) {
+    _sucessoNoCadastro = s;
   }
 }

@@ -27,7 +27,6 @@ class _ContactPageState extends State<ContactPage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    MapController mapController = MapController();
 
     return Consumer<ContactStore>(
       builder: (context, store, child) {
@@ -82,7 +81,7 @@ class _ContactPageState extends State<ContactPage> {
                             ),
                           )
                           : FlutterMap(
-                            mapController: mapController,
+                            mapController: store.mapController,
                             options: MapOptions(
                               initialCenter: LatLng(
                                 store.currentLatLng!.latitude,

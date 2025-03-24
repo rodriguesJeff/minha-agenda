@@ -25,6 +25,53 @@ class ContatoWidget extends StatelessWidget {
         return Card(
           margin: EdgeInsets.only(top: 2, bottom: 8),
           child: ListTile(
+            onTap: () {
+              if (!header) {
+                store.selecionarContato(contato!);
+              }
+            },
+            trailing:
+                header
+                    ? null
+                    : IconButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (_) => SingleChildScrollView(
+                                child: AlertDialog(
+                                  title: Text(
+                                    "Você deseja excluir este contato?",
+                                  ),
+                                  content: Column(
+                                    children: [
+                                      Text(
+                                        "${contato!.nome} será excluído.",
+                                        style: TextStyle(fontSize: 30),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Cancelar"),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        store.apagarContato(contato!.id);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text("Excluir"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                        );
+                      },
+                      icon: Icon(Icons.delete, color: Colors.red),
+                    ),
             subtitle:
                 header
                     ? ElevatedButton(
@@ -33,6 +80,7 @@ class ContatoWidget extends StatelessWidget {
                         elevation: 0,
                       ),
                       onPressed: () {
+                        store.resetarControllers();
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -56,16 +104,27 @@ class ContatoWidget extends StatelessWidget {
                           child: Text(contato!.nome[0]),
                         ),
                         SizedBox(width: 20),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(contato!.nome, style: TextStyle(fontSize: 20)),
-                            Text(
-                              contato!.telefone,
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            Text(contato!.cpf, style: TextStyle(fontSize: 16)),
-                          ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Nome: ${contato!.nome}",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 3,
+                                softWrap: true,
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              Text(
+                                "Telefone: ${contato!.telefone}",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                "CPF:${contato!.cpf}",
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

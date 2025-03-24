@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
 import 'package:minha_agenda/src/utils/app_strings.dart';
 import 'package:sembast/sembast.dart';
@@ -65,8 +64,6 @@ class ContactsDatasource {
 
         if (buscarContatoPreexistente.isEmpty) {
           await _contatoInstancia.add(_db, payload);
-
-          debugPrint("Contato adicionado com sucesso! ${payload.toString()}");
 
           return true;
         } else {
@@ -184,8 +181,8 @@ class ContactsDatasource {
       );
 
       return response;
-    } on DioException catch (e) {
-      throw ServerFailure(message: e.message ?? "Erro na requisição");
+    } on DioException {
+      throw ServerFailure(message: "Erro na requisição");
     }
   }
 }
