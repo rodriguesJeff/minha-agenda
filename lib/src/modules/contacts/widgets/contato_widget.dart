@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
 import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dart';
@@ -48,23 +50,21 @@ class ContatoWidget extends StatelessWidget {
                     )
                     : Row(
                       children: [
-                        CircleAvatar(radius: 30, child: Text("A")),
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor: getRandomColor(),
+                          child: Text(contato!.nome[0]),
+                        ),
                         SizedBox(width: 20),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(contato!.nome, style: TextStyle(fontSize: 20)),
                             Text(
-                              "nome $adjustedIndex",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            Text(
-                              "telefone $adjustedIndex",
+                              contato!.telefone,
                               style: TextStyle(fontSize: 16),
                             ),
-                            Text(
-                              "email $adjustedIndex",
-                              style: TextStyle(fontSize: 16),
-                            ),
+                            Text(contato!.cpf, style: TextStyle(fontSize: 16)),
                           ],
                         ),
                       ],
@@ -73,5 +73,23 @@ class ContatoWidget extends StatelessWidget {
         );
       },
     );
+  }
+
+  Color getRandomColor() {
+    final List<Color> availableColors = [
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.cyan,
+      Colors.amber,
+      Colors.indigo,
+      Colors.deepPurple,
+    ];
+
+    final random = Random();
+    return availableColors[random.nextInt(availableColors.length)];
   }
 }

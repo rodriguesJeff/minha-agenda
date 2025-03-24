@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
 import 'package:minha_agenda/src/utils/app_strings.dart';
 import 'package:sembast/sembast.dart';
@@ -7,21 +8,23 @@ import 'package:sembast_web/sembast_web.dart';
 class ContactsDatasource {
   final Database _db;
   final Dio dio;
-  final StoreRef<String, Map<String, dynamic>> _contatoInstancia =
+  final StoreRef<String, Map<String, dynamic>> _usuarioInstancia =
       stringMapStoreFactory.store(AppStrings.Usuario);
+  final StoreRef<String, Map<String, dynamic>> _contatoInstancia =
+      stringMapStoreFactory.store(AppStrings.Contato);
 
   ContactsDatasource(this._db, this.dio);
 
   Future<List<RecordSnapshot<String, Map<String, dynamic>>>>
   buscarTodosOsContatos(String userId) async {
     try {
-      final finder = Finder(filter: Filter.equals('userId', userId));
+      final finder = Finder(filter: Filter.equals('id', userId));
 
-      final usuarioExiste = await _contatoInstancia.find(_db, finder: finder);
+      final usuarioExiste = await _usuarioInstancia.find(_db, finder: finder);
 
       if (usuarioExiste.isNotEmpty) {
         final finderMeusContatos = Finder(
-          filter: Filter.equals('usuarioId', userId),
+          filter: Filter.equals('userId', userId),
         );
 
         final contatosSalvos = await _contatoInstancia.find(
@@ -46,9 +49,9 @@ class ContactsDatasource {
 
   Future<bool> cadastrarNovoContato(Map<String, dynamic> payload) async {
     try {
-      final finder = Finder(filter: Filter.equals('userId', payload['userId']));
+      final finder = Finder(filter: Filter.equals('id', payload['userId']));
 
-      final usuarioExiste = await _contatoInstancia.find(_db, finder: finder);
+      final usuarioExiste = await _usuarioInstancia.find(_db, finder: finder);
 
       if (usuarioExiste.isNotEmpty) {
         final finderPorCpf = Finder(
@@ -62,6 +65,8 @@ class ContactsDatasource {
 
         if (buscarContatoPreexistente.isEmpty) {
           await _contatoInstancia.add(_db, payload);
+
+          debugPrint("Contato adicionado com sucesso! ${payload.toString()}");
 
           return true;
         } else {
@@ -85,7 +90,7 @@ class ContactsDatasource {
     try {
       final finder = Finder(filter: Filter.equals('userId', payload['userId']));
 
-      final usuarioExiste = await _contatoInstancia.find(_db, finder: finder);
+      final usuarioExiste = await _usuarioInstancia.find(_db, finder: finder);
 
       if (usuarioExiste.isNotEmpty) {
         final finderPorCpf = Finder(
@@ -130,9 +135,9 @@ class ContactsDatasource {
 
   Future<bool> apagarContato(String userId, contactId) async {
     try {
-      final finder = Finder(filter: Filter.equals('userId', userId));
+      final finder = Finder(filter: Filter.equals('id', userId));
 
-      final usuarioExiste = await _contatoInstancia.find(_db, finder: finder);
+      final usuarioExiste = await _usuarioInstancia.find(_db, finder: finder);
 
       if (usuarioExiste.isNotEmpty) {
         final finderPorId = Finder(filter: Filter.equals('id', contactId));

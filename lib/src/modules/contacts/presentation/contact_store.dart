@@ -10,6 +10,7 @@ import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_cep.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_coordinates.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_update_contact.dart';
+import 'package:minha_agenda/src/modules/global/usecases/get_logged_user.dart';
 import 'package:minha_agenda/src/modules/splash/usecases/get_location_permission.dart';
 
 class ContactStore extends ChangeNotifier {
@@ -20,6 +21,7 @@ class ContactStore extends ChangeNotifier {
   final GetLocationPermission getLocationPermission;
   final DoFindCep doFindCep;
   final DoFindCoordinates doFindCoordinates;
+  final GetLoggedUser getLoggedUser;
 
   ContactStore({
     required this.doCreateContact,
@@ -29,6 +31,7 @@ class ContactStore extends ChangeNotifier {
     required this.getLocationPermission,
     required this.doFindCep,
     required this.doFindCoordinates,
+    required this.getLoggedUser,
   });
 
   UsuarioModel? usuarioAtual;
@@ -43,19 +46,33 @@ class ContactStore extends ChangeNotifier {
   String get erro => _erro;
   bool get buscandoCep => _buscandoCep;
 
+  void inicializarTarefas() async {
+    await iniciarUsuarioLogado();
+    await setMapPosition();
+    await buscarTodosOsContatos();
+    setCepError(null);
+    setErro('');
+    setLocalizationErro(null);
+  }
+
   Future<void> buscarTodosOsContatos() async {
+    if (usuarioAtual == null) {
+      setErro("Usuário não carregado");
+      return;
+    }
+
     _carregando = true;
     notifyListeners();
-
-    await setMapPosition();
 
     final result = await doFindAllContacts(userId: usuarioAtual!.id);
 
     result.fold(
       (l) {
         setErro(l);
+        debugPrint(l);
       },
       (r) {
+        debugPrint(r.toString());
         contatos = r;
       },
     );
@@ -91,6 +108,7 @@ class ContactStore extends ChangeNotifier {
     result.fold(
       (l) {
         setErro(l);
+        debugPrint(l);
       },
       (r) {
         setErro('');
@@ -172,6 +190,8 @@ class ContactStore extends ChangeNotifier {
   }
 
   Future<void> buscarEndereco(String cep) async {
+    if (jaBuscouCep) return;
+
     _buscandoCep = true;
     notifyListeners();
 
@@ -212,7 +232,22 @@ class ContactStore extends ChangeNotifier {
       },
     );
 
+    jaBuscouCep = true;
+
     _buscandoCep = false;
+    notifyListeners();
+  }
+
+  Future<void> iniciarUsuarioLogado() async {
+    _carregando = true;
+    notifyListeners();
+
+    final result = await getLoggedUser();
+    result.fold((l) {}, (r) {
+      usuarioAtual = r;
+    });
+
+    _carregando = false;
     notifyListeners();
   }
 
@@ -243,5 +278,11 @@ class ContactStore extends ChangeNotifier {
 
   void setCepError(String? e) {
     _cepError = e;
+  }
+
+  bool jaBuscouCep = false;
+
+  void resetarBuscaCep() {
+    jaBuscouCep = false;
   }
 }

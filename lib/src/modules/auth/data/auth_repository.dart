@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:minha_agenda/src/models/usuario_model.dart';
 import 'package:minha_agenda/src/modules/auth/data/auth_datasource.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
+import 'package:minha_agenda/src/utils/app_strings.dart';
 
 class AuthRepository {
   final AuthDatasource datasource;
@@ -29,9 +33,29 @@ class AuthRepository {
     try {
       final response = await datasource.login(email: email, senha: senha);
 
-      return Right(UsuarioModel.fromJson(response));
+      final usuario = UsuarioModel.fromJson(response);
+
+      localStorage.setItem(AppStrings.Usuario, jsonEncode(usuario.toJson()));
+
+      return Right(usuario);
     } on DBFailure catch (e) {
       return Left(e.message);
+    }
+  }
+
+  Future<Either<String, UsuarioModel>> buscarUsuarioLogado() async {
+    try {
+      final response = localStorage.getItem(AppStrings.Usuario);
+
+      if (response != null) {
+        final usuario = UsuarioModel.fromJson(jsonDecode(response));
+
+        return Right(usuario);
+      } else {
+        return Left('Usuário não encontrado');
+      }
+    } catch (e) {
+      return Left("Erro na obtenção do usuário logado");
     }
   }
 }

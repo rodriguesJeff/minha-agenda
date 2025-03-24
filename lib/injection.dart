@@ -12,6 +12,7 @@ import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_cep.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_coordinates.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_update_contact.dart';
+import 'package:minha_agenda/src/modules/global/usecases/get_logged_user.dart';
 import 'package:sembast_web/sembast_web.dart';
 
 final getIt = GetIt.instance;
@@ -44,4 +45,5 @@ injecDependencies() async {
   getIt.registerFactory(() => DoFindAllContacts(repository: getIt()));
   getIt.registerFactory(() => DoFindCep(repository: getIt()));
   getIt.registerFactory(() => DoFindCoordinates(repository: getIt()));
+  getIt.registerFactory(() => GetLoggedUser(getIt()));
 }

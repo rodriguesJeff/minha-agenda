@@ -4,9 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dart';
 import 'package:provider/provider.dart';
 
-class AddContactDialog extends StatelessWidget {
-  AddContactDialog({super.key});
+class AddContactDialog extends StatefulWidget {
+  const AddContactDialog({super.key});
 
+  @override
+  State<AddContactDialog> createState() => _AddContactDialogState();
+}
+
+class _AddContactDialogState extends State<AddContactDialog> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -20,6 +25,21 @@ class AddContactDialog extends StatelessWidget {
               key: _formKey,
               child: Column(
                 children: [
+                  if (store.erro.isNotEmpty) ...[
+                    Container(
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.red,
+                      ),
+                      child: Text(
+                        store.erro,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                  ],
+
                   TextFormField(
                     decoration: InputDecoration(labelText: "Nome"),
                     controller: store.nomeController,
@@ -45,6 +65,10 @@ class AddContactDialog extends StatelessWidget {
                     ],
                     enabled: !store.buscandoCep,
                     validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Campo obrigatório";
+                      }
+
                       return CPFValidator.isValid(value)
                           ? null
                           : "CPF inválido";
@@ -55,7 +79,11 @@ class AddContactDialog extends StatelessWidget {
                     decoration: InputDecoration(labelText: "CEP"),
                     controller: store.cepController,
                     onChanged: (s) {
-                      if (s.length == 10) {
+                      if (s.length < 10 && store.jaBuscouCep) {
+                        store.resetarBuscaCep();
+                      }
+
+                      if (s.length == 10 && !store.jaBuscouCep) {
                         store.buscarEndereco(s);
                       }
                     },
@@ -125,19 +153,11 @@ class AddContactDialog extends StatelessWidget {
                 child: Text("Cancelar"),
               ),
               TextButton(
-                onPressed: () async {
+                onPressed: () {
                   if (_formKey.currentState!.validate() == true) {
-                    await store.cadastrarContato();
-
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (store.erro.isNotEmpty) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(store.erro)));
-                      } else {
-                        Navigator.of(context).pop();
-                      }
-                    });
+                    store.cadastrarContato().then(
+                      (_) => Navigator.of(context).pop(),
+                    );
                   }
                 },
                 child: Text("Adicionar"),

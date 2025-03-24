@@ -16,11 +16,12 @@ class ContactPage extends StatefulWidget {
 class _ContactPageState extends State<ContactPage> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPersistentFrameCallback((x) async {
-      final store = context.read<ContactStore>();
-      await store.setMapPosition();
-    });
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final store = context.read<ContactStore>();
+      store.inicializarTarefas();
+    });
   }
 
   @override
@@ -62,7 +63,7 @@ class _ContactPageState extends State<ContactPage> {
                           final adjustedIndex = index - 1;
                           return ContatoWidget(
                             adjustedIndex: adjustedIndex,
-                            contato: store.contatos[index],
+                            contato: store.contatos[adjustedIndex],
                           );
                         }
                       },
