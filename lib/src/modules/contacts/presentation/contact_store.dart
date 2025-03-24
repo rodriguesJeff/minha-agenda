@@ -7,6 +7,7 @@ import 'package:minha_agenda/src/models/usuario_model.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_create_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_delete_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.dart';
+import 'package:minha_agenda/src/modules/contacts/usecases/do_find_cep.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_update_contact.dart';
 import 'package:minha_agenda/src/modules/splash/usecases/get_location_permission.dart';
 
@@ -16,6 +17,7 @@ class ContactStore extends ChangeNotifier {
   final DoFindAllContacts doFindAllContacts;
   final DoDeleteContact doDeleteContact;
   final GetLocationPermission getLocationPermission;
+  final DoFindCep doFindCep;
 
   ContactStore({
     required this.doCreateContact,
@@ -23,17 +25,20 @@ class ContactStore extends ChangeNotifier {
     required this.doFindAllContacts,
     required this.doDeleteContact,
     required this.getLocationPermission,
+    required this.doFindCep,
   });
 
   UsuarioModel? usuarioAtual;
   List<ContatoModel> contatos = [];
   bool _carregando = false;
+  bool _buscandoCep = false;
   String _erro = "";
   late ContatoModel? contatoSelecionado;
   LatLng? currentLatLng;
 
   bool get carregando => _carregando;
   String get erro => _erro;
+  bool get buscandoCep => _buscandoCep;
 
   Future<void> buscarTodosOsContatos() async {
     _carregando = true;
@@ -162,6 +167,30 @@ class ContactStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> buscarEndereco(String cep) async {
+    _buscandoCep = true;
+    notifyListeners();
+
+    final result = await doFindCep(cep.replaceAll('.', '').replaceAll('-', ''));
+
+    result.fold(
+      (l) {
+        setErro(l);
+      },
+      (r) {
+        final endereco = r;
+        logradouroController.text = endereco.logradouro;
+        unidadeController.text = endereco.unidade;
+        bairroController.text = endereco.bairro;
+        localidadeController.text = endereco.localidade;
+        ufController.text = endereco.uf;
+      },
+    );
+
+    _buscandoCep = false;
+    notifyListeners();
+  }
+
   final nomeController = TextEditingController();
   final cpfController = TextEditingController();
   final telefoneController = TextEditingController();
@@ -176,6 +205,4 @@ class ContactStore extends ChangeNotifier {
   final numeroController = TextEditingController();
   final complementoController = TextEditingController();
   final estadoController = TextEditingController();
-  final regiaoController = TextEditingController();
-  final dddController = TextEditingController();
 }

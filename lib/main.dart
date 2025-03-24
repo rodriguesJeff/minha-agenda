@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
                 doUpdateContact: getIt(),
                 doFindAllContacts: getIt(),
                 doDeleteContact: getIt(),
+                doFindCep: getIt(),
                 getLocationPermission: GetLocationPermission(),
               ),
         ),

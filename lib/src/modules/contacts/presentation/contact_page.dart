@@ -92,8 +92,7 @@ class _ContactPageState extends State<ContactPage> {
                             children: [
                               TileLayer(
                                 urlTemplate:
-                                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                                subdomains: ['a', 'b', 'c'],
+                                    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                                 tileProvider: CancellableNetworkTileProvider(),
                               ),
                               MarkerLayer(

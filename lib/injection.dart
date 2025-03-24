@@ -8,6 +8,7 @@ import 'package:minha_agenda/src/modules/contacts/data/contacts_repository.dart'
 import 'package:minha_agenda/src/modules/contacts/usecases/do_create_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_delete_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.dart';
+import 'package:minha_agenda/src/modules/contacts/usecases/do_find_cep.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_update_contact.dart';
 import 'package:sembast_web/sembast_web.dart';
 
@@ -36,4 +37,5 @@ injecDependencies() async {
   getIt.registerFactory(() => DoUpdateContact(repository: getIt()));
   getIt.registerFactory(() => DoDeleteContact(repository: getIt()));
   getIt.registerFactory(() => DoFindAllContacts(repository: getIt()));
+  getIt.registerFactory(() => DoFindCep(repository: getIt()));
 }
