@@ -138,6 +138,13 @@ class _AuthPageState extends State<AuthPage> {
                                                   store.cadastrarUsuario();
                                                 } else {
                                                   store.login();
+                                                  if (store.usuarioLogado !=
+                                                      null) {
+                                                    Navigator.pushNamed(
+                                                      context,
+                                                      '/contacts',
+                                                    );
+                                                  }
                                                 }
                                               },
                                               style: ButtonStyle(

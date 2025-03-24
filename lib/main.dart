@@ -3,6 +3,7 @@ import 'package:minha_agenda/injection.dart';
 import 'package:minha_agenda/src/modules/auth/presentation/auth_page.dart';
 import 'package:minha_agenda/src/modules/auth/presentation/auth_store.dart';
 import 'package:minha_agenda/src/modules/contacts/presentation/contact_page.dart';
+import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -22,6 +23,15 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (context) => AuthStore(doLogin: getIt(), doRegister: getIt()),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (context) => ContactStore(
+                doCreateContact: getIt(),
+                doUpdateContact: getIt(),
+                doFindAllContacts: getIt(),
+                doDeleteContact: getIt(),
+              ),
         ),
       ],
       child: MaterialApp(
