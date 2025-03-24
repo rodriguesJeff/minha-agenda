@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class EnderecoModel {
   String cep;
   String logradouro;
@@ -7,7 +9,7 @@ class EnderecoModel {
   String uf;
   int? numero;
   String? complemento;
-  String? estado;
+  String estado;
   String? regiao;
   String? ddd;
 
@@ -20,7 +22,7 @@ class EnderecoModel {
     required this.uf,
     this.numero,
     this.complemento,
-    this.estado,
+    required this.estado,
     this.regiao,
     this.ddd,
   });
@@ -42,6 +44,7 @@ class EnderecoModel {
   }
 
   factory EnderecoModel.fromJson(dynamic json) {
+    debugPrint("Json de endereco $json");
     return EnderecoModel(
       cep: json["cep"],
       logradouro: json["logradouro"],
@@ -49,7 +52,7 @@ class EnderecoModel {
       bairro: json["bairro"],
       localidade: json["localidade"],
       uf: json["uf"],
-      numero: json["numero"],
+      numero: json["numero"] ?? 0,
       complemento: json["complemento"],
       estado: json["estado"],
       regiao: json["regiao"],

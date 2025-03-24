@@ -100,6 +100,9 @@ class ContactStore extends ChangeNotifier {
         bairro: bairroController.text,
         localidade: localidadeController.text,
         uf: ufController.text,
+        estado: estadoController.text,
+        numero: int.parse(numeroController.text),
+        complemento: complementoController.text,
       ),
       latitude: double.parse(latitudeController.text),
       longitude: double.parse(longitudeController.text),
@@ -140,6 +143,9 @@ class ContactStore extends ChangeNotifier {
         bairro: bairroController.text,
         localidade: localidadeController.text,
         uf: ufController.text,
+        estado: estadoController.text,
+        numero: int.parse(numeroController.text),
+        complemento: complementoController.text,
       ),
       latitude: double.parse(latitudeController.text),
       longitude: double.parse(longitudeController.text),
@@ -152,8 +158,8 @@ class ContactStore extends ChangeNotifier {
         setErro(l);
       },
       (r) {
-        final index = contatos.indexWhere((e) => e.id == contatoAEditar.id);
-        contatos.insert(index, contatoAEditar);
+        buscarTodosOsContatos();
+        setSucessNoCadastro(true);
       },
     );
 
@@ -240,7 +246,9 @@ class ContactStore extends ChangeNotifier {
         bairroController.text = endereco.bairro;
         localidadeController.text = endereco.localidade;
         ufController.text = endereco.uf;
-        estadoController.text = endereco.estado ?? '';
+        estadoController.text = endereco.estado;
+        numeroController.text = endereco.numero.toString();
+        complementoController.text = endereco.complemento ?? '';
       },
     );
 
@@ -276,7 +284,9 @@ class ContactStore extends ChangeNotifier {
     ufController.text = c.endereco.uf;
     latitudeController.text = c.latitude.toString();
     longitudeController.text = c.longitude.toString();
-    estadoController.text = c.endereco.estado ?? '';
+    estadoController.text = c.endereco.estado;
+    numeroController.text = c.endereco.numero.toString();
+    complementoController.text = c.endereco.complemento ?? '';
 
     setMapPosition();
 

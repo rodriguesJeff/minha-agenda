@@ -26,6 +26,10 @@ class ContatoWidget extends StatelessWidget {
             onTap: () {
               if (!header) {
                 store.selecionarContato(contato!);
+                showDialog(
+                  context: context,
+                  builder: (_) => AddContactDialog(),
+                );
               }
             },
             trailing:

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
 import 'package:minha_agenda/src/utils/app_strings.dart';
 import 'package:sembast/sembast.dart';
@@ -85,7 +86,7 @@ class ContactsDatasource {
     Map<String, dynamic> payload,
   ) async {
     try {
-      final finder = Finder(filter: Filter.equals('userId', payload['userId']));
+      final finder = Finder(filter: Filter.equals('id', payload['userId']));
 
       final usuarioExiste = await _usuarioInstancia.find(_db, finder: finder);
 
@@ -100,7 +101,13 @@ class ContactsDatasource {
         );
 
         if (buscarContatoPreexistente.isNotEmpty) {
-          final atualizacao = await _contatoInstancia.update(_db, payload);
+          final atualizacao = await _contatoInstancia.update(
+            _db,
+            payload,
+            finder: finderPorCpf,
+          );
+
+          debugPrint("Atualização: $payload");
 
           if (atualizacao == 1) {
             final finder = Finder(filter: Filter.equals('id', payload['id']));
