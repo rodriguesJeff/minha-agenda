@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
+import 'package:minha_agenda/src/models/endereco_model.dart';
 import 'package:minha_agenda/src/modules/contacts/data/contacts_datasource.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
 
@@ -59,6 +60,16 @@ class ContactsRepository {
 
       return Right(response);
     } on DBFailure catch (e) {
+      return Left(e.message);
+    }
+  }
+
+  Future<Either<String, EnderecoModel>> buscarEndereco(String cep) async {
+    try {
+      final response = await datasource.buscarEndereco(cep);
+
+      return Right(EnderecoModel.fromJson(response));
+    } on ServerFailure catch (e) {
       return Left(e.message);
     }
   }

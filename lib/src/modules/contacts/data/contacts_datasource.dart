@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
 import 'package:minha_agenda/src/utils/app_strings.dart';
 import 'package:sembast/sembast.dart';
@@ -152,6 +153,15 @@ class ContactsDatasource {
       rethrow;
     } catch (e) {
       throw DBFailure(message: "Erro ao apagar contato");
+    }
+  }
+
+  Future<Map<String, dynamic>> buscarEndereco(String cep) async {
+    try {
+      final response = await Dio().get("https://viacep.com.br/ws/$cep/json/");
+      return response.data;
+    } on DioException catch (e) {
+      throw ServerFailure(message: e.message ?? "Erro na requisição");
     }
   }
 }

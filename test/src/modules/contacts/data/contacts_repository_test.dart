@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
+import 'package:minha_agenda/src/models/endereco_model.dart';
 import 'package:minha_agenda/src/modules/contacts/data/contacts_datasource.dart';
 import 'package:minha_agenda/src/modules/contacts/data/contacts_repository.dart';
 import 'package:minha_agenda/src/utils/app_failures.dart';
@@ -47,6 +48,8 @@ class FakeRecordSnapshot<K, V> extends RecordSnapshot<K, V> {
     return FakeRecordSnapshot<RK, RV>(_key as RK, _value as RV);
   }
 }
+
+class FakeEnderecoModel extends Fake implements EnderecoModel {}
 
 void main() {
   late MockContactsDatasource contactsDatasource;
@@ -228,6 +231,50 @@ void main() {
         );
 
         expect(result, Right(true));
+      },
+    );
+  });
+
+  group("buscarEndereco", () {
+    test(
+      "Deve retornar Left(String) quando ocorrer algum erro na busca do endereco na api",
+      () async {
+        when(
+          () => contactsDatasource.buscarEndereco("01000-000"),
+        ).thenThrow(ServerFailure(message: 'Erro ao buscar endereço'));
+
+        final result = await repository.buscarEndereco("01000-000");
+
+        expect(result, Left('Erro ao buscar endereço'));
+      },
+    );
+
+    test(
+      "Deve retornar Right(EnderecoModel) quando conseguir buscar o endereço",
+      () async {
+        when(() => contactsDatasource.buscarEndereco("01000-000")).thenAnswer(
+          (_) async => {
+            "cep": "01000-000",
+            "logradouro": "Rua das Flores",
+            "unidade": "001",
+            "bairro": "Jardim Primavera",
+            "localidade": "São Paulo",
+            "uf": "SP",
+            "numero": 123,
+            "complemento": "Apto 101",
+            "estado": "São Paulo",
+            "regiao": "Sudeste",
+            "ddd": "11",
+          },
+        );
+
+        final result = await repository.buscarEndereco("01000-000");
+
+        expect(result.isRight(), isTrue);
+        expect(
+          result.getOrElse(() => FakeEnderecoModel()),
+          isA<EnderecoModel>(),
+        );
       },
     );
   });

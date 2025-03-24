@@ -7,3 +7,7 @@ abstract class AppFailures {
 class DBFailure extends AppFailures {
   DBFailure({required super.message});
 }
+
+class ServerFailure extends AppFailures {
+  ServerFailure({required super.message});
+}
