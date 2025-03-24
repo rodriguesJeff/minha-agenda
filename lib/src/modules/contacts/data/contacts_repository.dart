@@ -1,4 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
 import 'package:minha_agenda/src/models/endereco_model.dart';
 import 'package:minha_agenda/src/modules/contacts/data/contacts_datasource.dart';
@@ -69,6 +71,27 @@ class ContactsRepository {
       final response = await datasource.buscarEndereco(cep);
 
       return Right(EnderecoModel.fromJson(response));
+    } on ServerFailure catch (e) {
+      return Left(e.message);
+    }
+  }
+
+  Future<Either<String, LatLng>> buscarCoordenadas(String endereco) async {
+    try {
+      final Response response = await datasource.buscarCoordenadas(endereco);
+
+      if (response.statusCode == 200) {
+        if (response.data.isNotEmpty) {
+          final String lat = response.data.first['lat'];
+          final String lon = response.data.first['lon'];
+
+          return Right(LatLng(double.tryParse(lat)!, double.tryParse(lon)!));
+        } else {
+          return Left('Endereço não encontrado!');
+        }
+      } else {
+        return Left('Erro ao buscar coordenadas!');
+      }
     } on ServerFailure catch (e) {
       return Left(e.message);
     }

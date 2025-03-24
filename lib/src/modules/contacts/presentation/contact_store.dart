@@ -8,6 +8,7 @@ import 'package:minha_agenda/src/modules/contacts/usecases/do_create_contact.dar
 import 'package:minha_agenda/src/modules/contacts/usecases/do_delete_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_cep.dart';
+import 'package:minha_agenda/src/modules/contacts/usecases/do_find_coordinates.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_update_contact.dart';
 import 'package:minha_agenda/src/modules/splash/usecases/get_location_permission.dart';
 
@@ -18,6 +19,7 @@ class ContactStore extends ChangeNotifier {
   final DoDeleteContact doDeleteContact;
   final GetLocationPermission getLocationPermission;
   final DoFindCep doFindCep;
+  final DoFindCoordinates doFindCoordinates;
 
   ContactStore({
     required this.doCreateContact,
@@ -26,6 +28,7 @@ class ContactStore extends ChangeNotifier {
     required this.doDeleteContact,
     required this.getLocationPermission,
     required this.doFindCep,
+    required this.doFindCoordinates,
   });
 
   UsuarioModel? usuarioAtual;
@@ -61,7 +64,7 @@ class ContactStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> cadastrarUsuario() async {
+  Future<void> cadastrarContato() async {
     _carregando = true;
     notifyListeners();
 
@@ -90,6 +93,7 @@ class ContactStore extends ChangeNotifier {
         setErro(l);
       },
       (r) {
+        setErro('');
         buscarTodosOsContatos();
       },
     );
@@ -176,14 +180,35 @@ class ContactStore extends ChangeNotifier {
     result.fold(
       (l) {
         setErro(l);
+        setCepError("Erro na obtenção do endereço");
       },
-      (r) {
+      (r) async {
+        final enderecoFormatado = '${r.logradouro} ${r.bairro}';
+        debugPrint(enderecoFormatado);
+        final resultCoordinates = await doFindCoordinates(
+          endereco: enderecoFormatado,
+        );
+
+        resultCoordinates.fold(
+          (l) {
+            setErro(l);
+            setLocalizationErro("Erro na obtenção das coordenadas");
+          },
+          (c) {
+            setLocalizationErro(null);
+            final latLng = c;
+            latitudeController.text = latLng.latitude.toString();
+            longitudeController.text = latLng.longitude.toString();
+          },
+        );
+
         final endereco = r;
         logradouroController.text = endereco.logradouro;
         unidadeController.text = endereco.unidade;
         bairroController.text = endereco.bairro;
         localidadeController.text = endereco.localidade;
         ufController.text = endereco.uf;
+        estadoController.text = endereco.estado ?? '';
       },
     );
 
@@ -205,4 +230,18 @@ class ContactStore extends ChangeNotifier {
   final numeroController = TextEditingController();
   final complementoController = TextEditingController();
   final estadoController = TextEditingController();
+
+  String? _localizationErro;
+  String? get localizationErro => _localizationErro;
+
+  void setLocalizationErro(String? e) {
+    _localizationErro = e;
+  }
+
+  String? _cepError;
+  String? get cepErro => _cepError;
+
+  void setCepError(String? e) {
+    _cepError = e;
+  }
 }

@@ -5,7 +5,9 @@ import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dar
 import 'package:provider/provider.dart';
 
 class AddContactDialog extends StatelessWidget {
-  const AddContactDialog({super.key});
+  AddContactDialog({super.key});
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +17,7 @@ class AddContactDialog extends StatelessWidget {
           child: AlertDialog(
             title: Text("Adicionar contato"),
             content: Form(
+              key: _formKey,
               child: Column(
                 children: [
                   TextFormField(
@@ -82,8 +85,32 @@ class AddContactDialog extends StatelessWidget {
                   ),
                   SizedBox(height: 12),
                   TextFormField(
+                    decoration: InputDecoration(labelText: "Cidade"),
+                    controller: store.localidadeController,
+                    enabled: !store.buscandoCep,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
                     decoration: InputDecoration(labelText: "Estado"),
                     controller: store.estadoController,
+                    enabled: !store.buscandoCep,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: "Latitude",
+                      errorText: store.localizationErro,
+                    ),
+                    controller: store.latitudeController,
+                    enabled: !store.buscandoCep,
+                  ),
+                  SizedBox(height: 12),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: "Longitude",
+                      errorText: store.localizationErro,
+                    ),
+                    controller: store.longitudeController,
                     enabled: !store.buscandoCep,
                   ),
                   SizedBox(height: 12),
@@ -98,8 +125,20 @@ class AddContactDialog extends StatelessWidget {
                 child: Text("Cancelar"),
               ),
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
+                onPressed: () async {
+                  if (_formKey.currentState!.validate() == true) {
+                    await store.cadastrarContato();
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (store.erro.isNotEmpty) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(store.erro)));
+                      } else {
+                        Navigator.of(context).pop();
+                      }
+                    });
+                  }
                 },
                 child: Text("Adicionar"),
               ),

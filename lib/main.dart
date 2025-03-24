@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
                 doDeleteContact: getIt(),
                 doFindCep: getIt(),
                 getLocationPermission: GetLocationPermission(),
+                doFindCoordinates: getIt(),
               ),
         ),
         ChangeNotifierProvider(

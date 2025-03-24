@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:minha_agenda/src/modules/auth/data/auth_datasource.dart';
 import 'package:minha_agenda/src/modules/auth/data/auth_repository.dart';
@@ -9,6 +10,7 @@ import 'package:minha_agenda/src/modules/contacts/usecases/do_create_contact.dar
 import 'package:minha_agenda/src/modules/contacts/usecases/do_delete_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_cep.dart';
+import 'package:minha_agenda/src/modules/contacts/usecases/do_find_coordinates.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_update_contact.dart';
 import 'package:sembast_web/sembast_web.dart';
 
@@ -20,7 +22,10 @@ injecDependencies() async {
 
   // Datasources
   getIt.registerLazySingleton<AuthDatasource>(() => AuthDatasource(db));
-  getIt.registerLazySingleton<ContactsDatasource>(() => ContactsDatasource(db));
+  getIt.registerLazySingleton<Dio>(() => Dio());
+  getIt.registerLazySingleton<ContactsDatasource>(
+    () => ContactsDatasource(db, getIt()),
+  );
 
   // Repository
   getIt.registerLazySingleton<AuthRepository>(
@@ -38,4 +43,5 @@ injecDependencies() async {
   getIt.registerFactory(() => DoDeleteContact(repository: getIt()));
   getIt.registerFactory(() => DoFindAllContacts(repository: getIt()));
   getIt.registerFactory(() => DoFindCep(repository: getIt()));
+  getIt.registerFactory(() => DoFindCoordinates(repository: getIt()));
 }

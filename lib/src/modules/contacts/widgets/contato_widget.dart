@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minha_agenda/src/models/contato_model.dart';
 import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dart';
 import 'package:minha_agenda/src/modules/contacts/widgets/add_contact_dialog.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +9,12 @@ class ContatoWidget extends StatelessWidget {
     super.key,
     required this.adjustedIndex,
     this.header = false,
+    this.contato,
   });
 
   final int adjustedIndex;
   final bool header;
+  final ContatoModel? contato;
 
   @override
   Widget build(BuildContext context) {

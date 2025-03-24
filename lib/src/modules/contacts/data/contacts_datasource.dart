@@ -6,10 +6,11 @@ import 'package:sembast_web/sembast_web.dart';
 
 class ContactsDatasource {
   final Database _db;
+  final Dio dio;
   final StoreRef<String, Map<String, dynamic>> _contatoInstancia =
       stringMapStoreFactory.store(AppStrings.Usuario);
 
-  ContactsDatasource(this._db);
+  ContactsDatasource(this._db, this.dio);
 
   Future<List<RecordSnapshot<String, Map<String, dynamic>>>>
   buscarTodosOsContatos(String userId) async {
@@ -158,8 +159,26 @@ class ContactsDatasource {
 
   Future<Map<String, dynamic>> buscarEndereco(String cep) async {
     try {
-      final response = await Dio().get("https://viacep.com.br/ws/$cep/json/");
+      final response = await dio.get("https://viacep.com.br/ws/$cep/json/");
       return response.data;
+    } on DioException catch (e) {
+      throw ServerFailure(message: e.message ?? "Erro na requisição");
+    }
+  }
+
+  Future<Response> buscarCoordenadas(String endereco) async {
+    try {
+      final response = await dio.get(
+        "https://nominatim.openstreetmap.org/search?q=$endereco&format=json",
+        options: Options(
+          headers: {
+            "User-Agent":
+                "MinhaAgendaFlutterWeb/1.0 (https://minhaagenda.teste; jeffersondavid179@gmail.com)",
+          },
+        ),
+      );
+
+      return response;
     } on DioException catch (e) {
       throw ServerFailure(message: e.message ?? "Erro na requisição");
     }

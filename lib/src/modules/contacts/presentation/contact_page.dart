@@ -54,13 +54,16 @@ class _ContactPageState extends State<ContactPage> {
                     ),
                     padding: EdgeInsets.all(12),
                     child: ListView.builder(
-                      itemCount: 20,
+                      itemCount: store.contatos.length + 1,
                       itemBuilder: (context, index) {
                         if (index == 0) {
                           return ContatoWidget(adjustedIndex: 0, header: true);
                         } else {
                           final adjustedIndex = index - 1;
-                          return ContatoWidget(adjustedIndex: adjustedIndex);
+                          return ContatoWidget(
+                            adjustedIndex: adjustedIndex,
+                            contato: store.contatos[index],
+                          );
                         }
                       },
                     ),
