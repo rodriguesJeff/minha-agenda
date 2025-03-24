@@ -22,6 +22,7 @@ class ContatoWidget extends StatelessWidget {
       builder: (context, store, child) {
         return Card(
           margin: EdgeInsets.only(top: 2, bottom: 8),
+          color: store.contatoSelecionado == contato ? Colors.grey[300] : null,
           child: ListTile(
             onTap: () {
               if (!header) {
