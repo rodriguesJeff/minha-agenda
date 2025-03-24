@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
                 doUpdateContact: getIt(),
                 doFindAllContacts: getIt(),
                 doDeleteContact: getIt(),
+                getLocationPermission: GetLocationPermission(),
               ),
         ),
         ChangeNotifierProvider(
@@ -52,9 +53,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         ),
-        initialRoute: '/',
+        initialRoute: '/splash',
         routes: <String, WidgetBuilder>{
-          '/': (BuildContext context) => SplashPage(),
+          '/splash': (BuildContext context) => SplashPage(),
           '/auth': (BuildContext context) => AuthPage(),
           '/contacts': (BuildContext context) => ContactPage(),
         },

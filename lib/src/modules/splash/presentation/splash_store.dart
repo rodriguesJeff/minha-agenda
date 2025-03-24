@@ -9,7 +9,9 @@ class SplashStore extends ChangeNotifier {
   SplashStore({
     required this.getLocationPermission,
     required this.checkLoggedUser,
-  });
+  }) {
+    iniciarServicos();
+  }
 
   bool _carregando = false;
   bool _estaLogado = false;
@@ -20,6 +22,8 @@ class SplashStore extends ChangeNotifier {
   Future<void> iniciarServicos() async {
     _carregando = true;
     notifyListeners();
+
+    await Future.delayed(Duration(seconds: 2));
 
     if (!(await checkLoggedUser())) {
       _estaLogado = false;

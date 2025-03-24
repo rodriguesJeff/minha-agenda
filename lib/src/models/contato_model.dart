@@ -7,8 +7,8 @@ class ContatoModel {
   String cpf;
   String telefone;
   EnderecoModel endereco;
-  String latitude;
-  String longitude;
+  double latitude;
+  double longitude;
 
   ContatoModel({
     required this.userId,

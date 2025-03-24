@@ -11,23 +11,23 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   @override
-  void initState() {
-    context.read<SplashStore>().iniciarServicos();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Consumer<SplashStore>(
       builder: (context, store, child) {
-        WidgetsBinding.instance.addPersistentFrameCallback((_) {
-          if (!store.estaLogado) {
-            Navigator.pushNamed(context, '/auth');
-          } else {
-            Navigator.pushNamed(context, '/contacts');
-          }
-        });
-        return Scaffold(body: Center(child: CircularProgressIndicator()));
+        return Scaffold(
+          body: Builder(
+            builder: (context) {
+              WidgetsBinding.instance.addPersistentFrameCallback((_) {
+                if (!store.estaLogado) {
+                  Navigator.pushNamed(context, '/auth');
+                } else {
+                  Navigator.pushNamed(context, '/contacts');
+                }
+              });
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        );
       },
     );
   }
