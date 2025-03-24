@@ -84,4 +84,10 @@ class AuthStore extends ChangeNotifier {
     _usuarioCriadoComSucesso = value;
     notifyListeners();
   }
+
+  void resetarControllers() {
+    emailController.clear();
+    senhaController.clear();
+    nomeController.clear();
+  }
 }

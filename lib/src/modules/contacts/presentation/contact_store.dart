@@ -50,19 +50,19 @@ class ContactStore extends ChangeNotifier {
 
   void inicializarTarefas() async {
     await iniciarUsuarioLogado();
-    await setMapPosition();
-    await buscarTodosOsContatos();
+    if (usuarioAtual == null) {
+      setErro("Usuário não carregado");
+      return;
+    } else {
+      await setMapPosition();
+      await buscarTodosOsContatos();
+    }
     setCepError(null);
     setErro('');
     setLocalizationErro(null);
   }
 
   Future<void> buscarTodosOsContatos() async {
-    if (usuarioAtual == null) {
-      setErro("Usuário não carregado");
-      return;
-    }
-
     _carregando = true;
     notifyListeners();
 

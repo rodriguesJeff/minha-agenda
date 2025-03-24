@@ -10,6 +10,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height;
@@ -36,6 +37,7 @@ class _AuthPageState extends State<AuthPage> {
                             store.carregando
                                 ? CircularProgressIndicator()
                                 : Form(
+                                  key: _formKey,
                                   child: Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
@@ -65,6 +67,14 @@ class _AuthPageState extends State<AuthPage> {
                                               ),
                                             ),
                                           ),
+                                          validator: (value) {
+                                            if (store.estaCriandoConta &&
+                                                value != null &&
+                                                value.isEmpty) {
+                                              return "Preencha o campo de Nome";
+                                            }
+                                            return null;
+                                          },
                                         ),
                                       ],
 
@@ -81,6 +91,16 @@ class _AuthPageState extends State<AuthPage> {
                                             ),
                                           ),
                                         ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Preencha o campo de E-mail";
+                                          } else if (!emailRegex.hasMatch(
+                                            value,
+                                          )) {
+                                            return "Digite um e-mail válido";
+                                          }
+                                          return null;
+                                        },
                                       ),
                                       TextFormField(
                                         obscureText: true,
@@ -95,6 +115,12 @@ class _AuthPageState extends State<AuthPage> {
                                             ),
                                           ),
                                         ),
+                                        validator: (value) {
+                                          if (value != null && value.isEmpty) {
+                                            return "Preencha o campo de Senha";
+                                          }
+                                          return null;
+                                        },
                                       ),
                                       Row(
                                         mainAxisAlignment:
@@ -130,6 +156,10 @@ class _AuthPageState extends State<AuthPage> {
                                           Expanded(
                                             child: ElevatedButton(
                                               onPressed: () {
+                                                if (!_formKey.currentState!
+                                                    .validate()) {
+                                                  return;
+                                                }
                                                 store
                                                     .setUsuarioCadastradoComSucesso(
                                                       false,
@@ -144,6 +174,7 @@ class _AuthPageState extends State<AuthPage> {
                                                       context,
                                                       '/contacts',
                                                     );
+                                                    store.resetarControllers();
                                                   }
                                                 }
                                               },
@@ -214,4 +245,8 @@ class _AuthPageState extends State<AuthPage> {
       },
     );
   }
+
+  final RegExp emailRegex = RegExp(
+    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+  );
 }

@@ -13,6 +13,9 @@ class DoLogin {
     required String email,
     required String senha,
   }) async {
+    if (email.isEmpty || senha.isEmpty) {
+      return Left("Preencha todos os campos");
+    }
     final result = await repository.login(email: email, senha: senha);
 
     result.fold(
