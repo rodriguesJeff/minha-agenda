@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minha_agenda/injection.dart';
 import 'package:minha_agenda/src/modules/auth/presentation/auth_page.dart';
 import 'package:minha_agenda/src/modules/auth/presentation/auth_store.dart';
+import 'package:minha_agenda/src/modules/contacts/presentation/contact_page.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -28,7 +29,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         ),
-        home: const AuthPage(),
+        initialRoute: '/',
+        routes: <String, WidgetBuilder>{
+          '/': (BuildContext context) => AuthPage(),
+          '/auth': (BuildContext context) => AuthPage(),
+          '/contacts': (BuildContext context) => ContactPage(),
+        },
       ),
     );
   }
