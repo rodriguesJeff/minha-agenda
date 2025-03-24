@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
 import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dart';
@@ -99,9 +97,15 @@ class ContatoWidget extends StatelessWidget {
                     : Row(
                       children: [
                         CircleAvatar(
+                          backgroundColor: getColorFromName(contato!.nome),
                           radius: 30,
-                          backgroundColor: getRandomColor(),
-                          child: Text(contato!.nome[0]),
+                          child: Text(
+                            contato!.nome[0],
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         SizedBox(width: 20),
                         Expanded(
@@ -134,21 +138,39 @@ class ContatoWidget extends StatelessWidget {
     );
   }
 
-  Color getRandomColor() {
-    final List<Color> availableColors = [
-      Colors.red,
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.cyan,
-      Colors.amber,
-      Colors.indigo,
-      Colors.deepPurple,
-    ];
+  Color getColorFromName(String name) {
+    final String firstLetter = name.trim().toUpperCase().substring(0, 1);
 
-    final random = Random();
-    return availableColors[random.nextInt(availableColors.length)];
+    // Mapa de cores leves com letras
+    final Map<String, Color> colorMap = {
+      'A': Colors.amber,
+      'B': Colors.blue,
+      'C': Colors.cyan,
+      'D': Colors.deepPurple,
+      'E': Colors.orange, // cor clara substituta
+      'F': Colors.teal,
+      'G': Colors.green,
+      'H': Colors.indigo,
+      'I': Colors.purple,
+      'J': Colors.lightBlue,
+      'K': Colors.lightGreen,
+      'L': Colors.lime,
+      'M': Colors.pink.shade200,
+      'N': Colors.orangeAccent,
+      'O': Colors.blueAccent,
+      'P': Colors.purpleAccent,
+      'Q': Colors.tealAccent,
+      'R': Colors.redAccent,
+      'S': Colors.cyanAccent,
+      'T': Colors.deepPurpleAccent,
+      'U': Colors.lightGreenAccent,
+      'V': Colors.amberAccent,
+      'W': Colors.yellowAccent,
+      'X': Colors.indigoAccent,
+      'Y': Colors.greenAccent,
+      'Z': Colors.pinkAccent,
+    };
+
+    return colorMap[firstLetter] ?? Colors.blue; // Azul padrão
   }
 }
