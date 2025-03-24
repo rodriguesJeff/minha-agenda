@@ -34,7 +34,18 @@ class ContatoWidget extends StatelessWidget {
             },
             trailing:
                 header
-                    ? null
+                    ? IconButton(
+                      onPressed: () {
+                        store.ordenarContatos(
+                          ordemCrescente: !store.estaOrdenadp,
+                        );
+                      },
+                      icon: Icon(
+                        store.estaOrdenadp
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                      ),
+                    )
                     : IconButton(
                       onPressed: () {
                         showDialog(

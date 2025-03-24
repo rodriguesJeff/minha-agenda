@@ -74,7 +74,8 @@ class ContactStore extends ChangeNotifier {
         debugPrint(l);
       },
       (r) {
-        debugPrint(r.toString());
+        r.sort((a, b) => a.nome.toLowerCase().compareTo(b.nome.toLowerCase()));
+        estaOrdenadp = true;
         contatos = r;
       },
     );
@@ -290,6 +291,20 @@ class ContactStore extends ChangeNotifier {
 
     setMapPosition();
 
+    notifyListeners();
+  }
+
+  bool estaOrdenadp = false;
+
+  void ordenarContatos({bool ordemCrescente = true}) {
+    contatos.sort((a, b) {
+      if (ordemCrescente) {
+        return a.nome.toLowerCase().compareTo(b.nome.toLowerCase());
+      } else {
+        return b.nome.toLowerCase().compareTo(a.nome.toLowerCase());
+      }
+    });
+    estaOrdenadp = ordemCrescente;
     notifyListeners();
   }
 
