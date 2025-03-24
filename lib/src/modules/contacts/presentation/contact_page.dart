@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:minha_agenda/src/modules/contacts/presentation/contact_store.dart';
 import 'package:minha_agenda/src/modules/contacts/widgets/contato_widget.dart';
 import 'package:provider/provider.dart';
@@ -72,7 +73,8 @@ class _ContactPageState extends State<ContactPage> {
                 SizedBox(width: 16),
                 Expanded(
                   flex: 2,
-                  child:
+                  child: Stack(
+                    children: [
                       store.currentLatLng == null
                           ? Center(
                             child: ElevatedButton(
@@ -117,6 +119,150 @@ class _ContactPageState extends State<ContactPage> {
                               ),
                             ],
                           ),
+                      Positioned(
+                        top: 16,
+                        right: 16,
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              RichText(
+                                text: TextSpan(
+                                  text: "Bem vindo de volta: ",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          store.usuarioAtual == null
+                                              ? "Carregando usuário..."
+                                              : store.usuarioAtual!.nome,
+
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              ElevatedButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (_) => Dialog(
+                                          child: SingleChildScrollView(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(
+                                                12.0,
+                                              ),
+                                              child: Column(
+                                                children: [
+                                                  SizedBox(height: 12),
+                                                  Text(
+                                                    "Tem certeza que deseja sair?",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 20),
+                                                  ElevatedButton(
+                                                    onPressed: () {
+                                                      localStorage.clear();
+                                                      Navigator.pushReplacementNamed(
+                                                        context,
+                                                        '/splash',
+                                                      );
+                                                    },
+                                                    style: ButtonStyle(
+                                                      backgroundColor:
+                                                          WidgetStatePropertyAll(
+                                                            Colors.black,
+                                                          ),
+                                                      shape: WidgetStatePropertyAll<
+                                                        RoundedRectangleBorder
+                                                      >(
+                                                        RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.zero,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            vertical: 10.0,
+                                                          ),
+                                                      child: Text(
+                                                        "CONFIRMAR",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 12),
+                                                  TextButton(
+                                                    onPressed:
+                                                        () =>
+                                                            Navigator.of(
+                                                              context,
+                                                            ).pop(),
+                                                    child: Text("Cancelar"),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                  );
+                                },
+                                style: ButtonStyle(
+                                  backgroundColor: WidgetStatePropertyAll(
+                                    Colors.black,
+                                  ),
+                                  shape: WidgetStatePropertyAll<
+                                    RoundedRectangleBorder
+                                  >(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.zero,
+                                    ),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                  ),
+                                  child: Text(
+                                    "Sair",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
