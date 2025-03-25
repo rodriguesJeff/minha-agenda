@@ -58,4 +58,20 @@ class AuthRepository {
       return Left("Erro na obtenção do usuário logado");
     }
   }
+
+  Future<Either<String, bool>> apagarUsuario() async {
+    try {
+      final response = await datasource.apagarUsuario();
+
+      if (response) {
+        localStorage.clear();
+
+        return Right(response);
+      } else {
+        return Left('Falha no processo de exclusão');
+      }
+    } on DBFailure catch (e) {
+      return Left(e.message);
+    }
+  }
 }

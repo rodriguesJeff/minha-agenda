@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:minha_agenda/src/modules/auth/data/auth_datasource.dart';
 import 'package:minha_agenda/src/modules/auth/data/auth_repository.dart';
+import 'package:minha_agenda/src/modules/auth/usecases/do_delete_user_account.dart';
 import 'package:minha_agenda/src/modules/auth/usecases/do_login.dart';
 import 'package:minha_agenda/src/modules/auth/usecases/do_register.dart';
 import 'package:minha_agenda/src/modules/contacts/data/contacts_datasource.dart';
@@ -46,4 +47,5 @@ injecDependencies() async {
   getIt.registerFactory(() => DoFindCep(repository: getIt()));
   getIt.registerFactory(() => DoFindCoordinates(repository: getIt()));
   getIt.registerFactory(() => GetLoggedUser(getIt()));
+  getIt.registerFactory(() => DoDeleteUserAccount(getIt()));
 }

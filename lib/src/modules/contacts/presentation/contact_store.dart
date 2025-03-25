@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:minha_agenda/src/models/contato_model.dart';
 import 'package:minha_agenda/src/models/endereco_model.dart';
 import 'package:minha_agenda/src/models/usuario_model.dart';
+import 'package:minha_agenda/src/modules/auth/usecases/do_delete_user_account.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_create_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_delete_contact.dart';
 import 'package:minha_agenda/src/modules/contacts/usecases/do_find_all_contacts.dart';
@@ -23,6 +24,7 @@ class ContactStore extends ChangeNotifier {
   final DoFindCep doFindCep;
   final DoFindCoordinates doFindCoordinates;
   final GetLoggedUser getLoggedUser;
+  final DoDeleteUserAccount deleteUserAccount;
 
   ContactStore({
     required this.doCreateContact,
@@ -33,6 +35,7 @@ class ContactStore extends ChangeNotifier {
     required this.doFindCep,
     required this.doFindCoordinates,
     required this.getLoggedUser,
+    required this.deleteUserAccount,
   });
 
   UsuarioModel? usuarioAtual;
@@ -308,6 +311,28 @@ class ContactStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void apagarContaDoUsuario() async {
+    _carregando = true;
+    notifyListeners();
+
+    final result = await deleteUserAccount(
+      usuarioAtual!.email,
+      senhaController.text,
+    );
+
+    result.fold(
+      (l) {
+        setErro(l);
+      },
+      (r) {
+        usuarioAtual = null;
+      },
+    );
+
+    _carregando = false;
+    notifyListeners();
+  }
+
   void resetarControllers() {
     nomeController.clear();
     cpfController.clear();
@@ -323,6 +348,7 @@ class ContactStore extends ChangeNotifier {
     estadoController.clear();
     numeroController.clear();
     complementoController.clear();
+    senhaController.clear();
     setSucessNoCadastro(null);
     setErro('');
   }
@@ -342,6 +368,7 @@ class ContactStore extends ChangeNotifier {
   final complementoController = TextEditingController();
   final estadoController = TextEditingController();
   final filtroController = TextEditingController();
+  final senhaController = TextEditingController();
 
   String? _localizationErro;
   String? get localizationErro => _localizationErro;

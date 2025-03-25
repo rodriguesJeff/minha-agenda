@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
                 getLocationPermission: GetLocationPermission(),
                 doFindCoordinates: getIt(),
                 getLoggedUser: getIt(),
+                deleteUserAccount: getIt(),
               ),
         ),
         ChangeNotifierProvider(

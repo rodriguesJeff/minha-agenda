@@ -261,6 +261,141 @@ class _ContactPageState extends State<ContactPage> {
                           ),
                         ),
                       ),
+
+                      Positioned(
+                        bottom: 16,
+                        right: 16,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            store.resetarControllers();
+                            showDialog(
+                              context: context,
+                              builder:
+                                  (_) => Dialog(
+                                    child: SingleChildScrollView(
+                                      child: SizedBox(
+                                        width: 700,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Column(
+                                            children: [
+                                              SizedBox(height: 12),
+                                              Text(
+                                                "Tem certeza que deseja apagar a sua conta?",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                "Esta ação é irreversível!",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.red,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(height: 12),
+                                              Text(
+                                                "Digite sua senha para confirmar",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(height: 12),
+                                              TextField(
+                                                controller:
+                                                    store.senhaController,
+                                                obscureText: true,
+                                                decoration: InputDecoration(
+                                                  labelText: "Senha",
+                                                  border: OutlineInputBorder(),
+                                                ),
+                                              ),
+                                              SizedBox(height: 20),
+                                              if (store.erro.isNotEmpty) ...[
+                                                Text(
+                                                  store.erro,
+                                                  style: TextStyle(
+                                                    color: Colors.redAccent,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 12),
+                                              ],
+
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  store.apagarContaDoUsuario();
+
+                                                  if (store.erro.isEmpty) {
+                                                    Navigator.pushReplacementNamed(
+                                                      context,
+                                                      '/splash',
+                                                    );
+                                                  }
+                                                },
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      WidgetStatePropertyAll(
+                                                        Colors.black,
+                                                      ),
+                                                  shape: WidgetStatePropertyAll<
+                                                    RoundedRectangleBorder
+                                                  >(
+                                                    RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.zero,
+                                                    ),
+                                                  ),
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 10.0,
+                                                      ),
+                                                  child: Text(
+                                                    "CONFIRMAR",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(height: 12),
+                                              TextButton(
+                                                onPressed:
+                                                    () =>
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop(),
+                                                child: Text("Cancelar"),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: EdgeInsets.all(16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Apagar conta",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
