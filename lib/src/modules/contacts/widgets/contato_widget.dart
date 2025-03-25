@@ -27,6 +27,20 @@ class ContatoWidget extends StatelessWidget {
             onTap: () {
               if (!header) {
                 store.selecionarContato(contato!);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "Toque e segure para editar",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            onLongPress: () {
+              if (!header) {
+                store.selecionarContato(contato!);
                 showDialog(
                   context: context,
                   builder: (_) => AddContactDialog(),

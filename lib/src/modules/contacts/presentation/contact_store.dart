@@ -341,6 +341,7 @@ class ContactStore extends ChangeNotifier {
   final numeroController = TextEditingController();
   final complementoController = TextEditingController();
   final estadoController = TextEditingController();
+  final filtroController = TextEditingController();
 
   String? _localizationErro;
   String? get localizationErro => _localizationErro;
